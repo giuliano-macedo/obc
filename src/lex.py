@@ -2,7 +2,7 @@
 import argparse
 import os
 import json
-def clean_lex_mess():
+def clean_ox_mess():
 	try:os.remove("parsetab.py")
 	except Exception:pass
 	try:os.remove("parser.out")
@@ -73,9 +73,9 @@ def lex(f):
 		ans=lexer(code)
 	except Exception as e:
 		print(f"[ERRO] erro léxico no arquivo {f.name}")
-		clean_lex_mess()
+		clean_ox_mess()
 		raise e
-	clean_lex_mess()
+	clean_ox_mess()
 	remove_comment(ans)
 	remove_unknows(ans)
 	return ans
