@@ -1,7 +1,41 @@
 #!/usr/bin/env python3
-import ox
 import argparse
+import os
+import json
+def clean_lex_mess():
+	try:os.remove("parsetab.py")
+	except Exception:pass
+	try:os.remove("parser.out")
+	except Exception:pass
+def remove_comment(tokens):
+	toremove=[]
+	state=0
+	for i,token in enumerate(tokens):
+		if state==0:
+			if token.type=="COMMENT_START":
+				state+=1
+		elif state==1:
+			if token.type=="COMMENT_STOP":
+				state=0
+			else:
+				toremove.append(i)
+	if state==1:
+		print(f"[ERRO] um comentário não tem fim!")
+	multipop(tokens,toremove)
+
+def multipop(l,trm):
+	# remove all indices in trm to remove from l
+	for i in trm[::-1]:
+		l.pop(i)
+def remove_unknows(tokens):
+	toremove=[]
+	for i,token in enumerate(tokens):
+		if token.type=="UNKNOW":
+			print(f"[ERRO] token desconhecido {token.value}")
+			toremove.append(i)
+	multipop(tokens,toremove)
 def lex(f):
+	import ox
 	st=lambda s:(s.upper(),s) #SIMPLE_TOKEN
 	lexer = ox.make_lexer([
 		st("if"),
@@ -10,6 +44,10 @@ def lex(f):
 		st("void"),
 		st("return"),
 		st("while"),
+
+		("COMMENT_START",r"\/\*"),
+		("COMMENT_STOP",r"\*\/"),
+
 		("ARIOP",r"\+|\-|\*|\/"),
 		("RELOP",r"<|<=|>|>=|==|\!="),
 		("ATTR",r"="),
@@ -25,17 +63,39 @@ def lex(f):
 		("B_OPEN",r"\{"),
 		("B_CLOSE",r"\}"),
 
-		("COMMENT_START",r"\/\*"),
-		("COMMENT_STOP",r"\*\/"),
 
 		("ID",r"[a-zA-Z]+"),
 		("NUM",r"[0-9]+"),
+		("UNKNOW",r"[^ \t\n]+"),
 	])
-	return lexer(f.read())
+	code=f.read()
+	try:
+		ans=lexer(code)
+	except Exception as e:
+		print(f"[ERRO] erro léxico no arquivo {f.name}")
+		clean_lex_mess()
+		raise e
+	clean_lex_mess()
+	remove_comment(ans)
+	remove_unknows(ans)
+	return ans
 if __name__=="__main__":
+	def el_out(tokens):
+		s=set(("ID","NUM"))
+		return ",".join((token.type if token.type in s else token.value for token in tokens))
+
 	parser=argparse.ArgumentParser()
 	parser.add_argument("input",type=argparse.FileType('r'))
+	parser.add_argument("-o","--output",type=argparse.FileType('w'),default="tokens.json")
 	args=parser.parse_args()
 
-	print(lex(args.input))
+	out=lex(args.input)
+	print("Saída:",el_out(out))
 	
+	args.output.write("{\"tokens\":[\n")
+	json_str=lambda s:json.dumps(s,ensure_ascii=False)
+	for token_name,token_value in ((token.type,token.value) for token in out):
+		args.output.write(f"\t[{json_str(token_name)},{json_str(token_value)}],\n")
+	if len(out)!=0:
+		args.output.seek(args.output.tell()-2)
+	args.output.write("\n]}")
