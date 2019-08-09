@@ -34,6 +34,30 @@ def remove_unknows(tokens):
 			print(f"[ERRO] token desconhecido {token.value}")
 			toremove.append(i)
 	multipop(tokens,toremove)
+def check_unknows_neighbors(tokens):
+	# não podem ocorrer entre identificadores, números e palavras-chaves
+	s=set(["IF","ELSE","VOID","RETURN","WHILE","ID","NUM"])
+	state=0
+	l,r=None,None
+	for i,token in enumerate(tokens):
+		if state==0:
+			if token.type=="COMMENT_START":
+				if i!=0:
+					l=tokens[i-1]
+					state+=1
+				else:
+					pass
+		elif state==1:
+			if token.type=="COMMENT_STOP":
+				if i!=len(tokens)-1:
+					r=tokens[i+1]
+					if (l.type in s) and (r.type in s):
+						if l.type==r.type:
+							print("[ERRO] comentários não podem ocorrer no meio de identificadores, números e palavras-chaves")
+				l,r=None,None
+				state=0
+			
+	
 def lex(f):
 	import ox
 	st=lambda s:(s.upper(),s) #SIMPLE_TOKEN
@@ -78,6 +102,7 @@ def lex(f):
 	clean_ox_mess()
 	remove_comment(ans)
 	remove_unknows(ans)
+	check_unknows_neighbors(ans)
 	return ans
 if __name__=="__main__":
 	def el_out(tokens):

@@ -3,4 +3,4 @@ void main(void)
  int z;
  x = 5;
  y = 10;
-} /* hi */
+} /* Comentário legal */
