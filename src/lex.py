@@ -51,8 +51,7 @@ def check_unknows_neighbors(tokens):
 			if token.type=="COMMENT_STOP":
 				if i!=len(tokens)-1:
 					r=tokens[i+1]
-					if (l.type in s) and (r.type in s):
-						if l.type==r.type:
+					if (l.type in s) and (l.type==r.type):
 							print("[ERRO] comentários não podem ocorrer no meio de identificadores, números e palavras-chaves")
 				l,r=None,None
 				state=0
