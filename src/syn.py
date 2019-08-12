@@ -17,12 +17,14 @@ class Lex(Lexer):
 			if obj[0] not in {"COMMENT_START", "COMMENT_STOP"}:
 				yield Token(obj[0],obj[1])
 def build_dot(tree,dot):
+	h=str(id(tree))
 	getData=lambda obj:obj if type(obj)==Token else obj.data
-	dot.node(getData(tree.data))
+	label=getData(tree) if type(tree)==Token else f"<<font face=\"boldfontname\">{getData(tree)}</font>>"
+	dot.node(h,label=label)
 	if type(tree) == Token:
 		return 
 	for children in tree.children:
-		dot.edge(getData(tree.data),getData(children.data))
+		dot.edge(h,str(id(children)))
 		build_dot(children,dot)
 with open("grammar.lark") as f:
 	grammar=f.read() + f"\n%declare {' '.join(TOKENS_NAMES)}"
@@ -39,7 +41,6 @@ if __name__ == '__main__':
 	tree = lark.parse(_input["tokens"])
 
 	dot = Digraph()
-	# breakpoint()
 	build_dot(tree,dot)
-
-	dot.render('tree1.pdf', view=True)
+	dot.render('tree1.dot', view=True)
+	print(tree.pretty())
