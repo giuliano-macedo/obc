@@ -17,11 +17,12 @@ class Lex(Lexer):
 			if obj[0] not in {"COMMENT_START", "COMMENT_STOP"}:
 				yield Token(obj[0],obj[1])
 def build_dot(tree,dot):
+	istoken=lambda obj:type(obj)==Token
+	getData=lambda obj:obj if istoken(obj) else obj.data
 	h=str(id(tree))
-	getData=lambda obj:obj if type(obj)==Token else obj.data
-	label=getData(tree) if type(tree)==Token else f"<<font face=\"boldfontname\">{getData(tree)}</font>>"
+	label=getData(tree) if istoken(tree) else f"<<font face=\"boldfontname\">{getData(tree)}</font>>"
 	dot.node(h,label=label)
-	if type(tree) == Token:
+	if istoken(tree):
 		return 
 	for children in tree.children:
 		dot.edge(h,str(id(children)))
