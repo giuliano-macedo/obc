@@ -16,9 +16,12 @@ class Lex(Lexer):
 		for obj in data:
 			if obj[0] not in {"COMMENT_START", "COMMENT_STOP"}:
 				yield Token(obj[0],obj[1])
-def build_dot(tree,dot):
+def build_dot(tree,dot,complete=False):
 	istoken=lambda obj:type(obj)==Token
-	getData=lambda obj:obj if istoken(obj) else obj.data
+	if complete:
+		getData=lambda obj:f"\<{obj.type},{obj.value}\>" if istoken(obj) else obj.data
+	else :
+		getData=lambda obj:obj if istoken(obj) else obj.data
 	h=str(id(tree))
 	label=getData(tree) if istoken(tree) else f"<<font face=\"boldfontname\">{getData(tree)}</font>>"
 	dot.node(h,label=label)
@@ -26,7 +29,7 @@ def build_dot(tree,dot):
 		return 
 	for children in tree.children:
 		dot.edge(h,str(id(children)))
-		build_dot(children,dot)
+		build_dot(children,dot,complete)
 with open("grammar.lark") as f:
 	grammar=f.read() + f"\n%declare {' '.join(TOKENS_NAMES)}"
 
@@ -35,6 +38,7 @@ if __name__ == '__main__':
 	parser=argparse.ArgumentParser()
 	parser.add_argument("input",type=argparse.FileType('r'),default="tokens.json",nargs='?')
 	parser.add_argument("-o","--output",type=argparse.FileType('w'),default="tree1.json")
+	parser.add_argument("-C","--complete-tree", action='store_true')
 	args=parser.parse_args()
 
 	lark = Lark(grammar,parser='lalr',lexer=Lex)
@@ -42,6 +46,8 @@ if __name__ == '__main__':
 	tree = lark.parse(_input["tokens"])
 
 	dot = Digraph()
-	build_dot(tree,dot)
+	if args.complete_tree:
+		dot.attr(rankdir="LR")
+	build_dot(tree,dot,complete=args.complete_tree)
 	dot.render('tree1.dot', view=True)
 	print(tree.pretty())
