@@ -2,6 +2,38 @@
 import argparse
 import os
 import json
+
+st=lambda s:(s.upper(),s) #SIMPLE_TOKEN
+TOKENS_DEFINITION=[
+	st("if"),
+	st("else"),
+	st("int"),
+	st("void"),
+	st("return"),
+	st("while"),
+
+	("COMMENT_START",r"\/\*"),
+	("COMMENT_STOP",r"\*\/"),
+
+	("ARIOP",r"\+|\-|\*|\/"),
+	("RELOP",r"<|<=|>|>=|==|\!="),
+	("ATTR",r"="),
+	("END_COMMAND",r"\;"),
+	("COMMA",r"\,"),
+	
+	("P_OPEN",r"\("),
+	("P_CLOSE",r"\)"),
+
+	("S_OPEN",r"\["),
+	("S_CLOSE",r"\]"),
+
+	("B_OPEN",r"\{"),
+	("B_CLOSE",r"\}"),
+
+	("ID",r"[a-zA-Z]+"),
+	("NUM",r"[0-9]+"),
+	("UNKNOW",r"[^ \t\n]+"),
+]
 def clean_ox_mess():
 	try:os.remove("parsetab.py")
 	except Exception:pass
@@ -59,38 +91,7 @@ def check_unknows_neighbors(tokens):
 	
 def lex(f):
 	import ox
-	st=lambda s:(s.upper(),s) #SIMPLE_TOKEN
-	lexer = ox.make_lexer([
-		st("if"),
-		st("else"),
-		st("int"),
-		st("void"),
-		st("return"),
-		st("while"),
-
-		("COMMENT_START",r"\/\*"),
-		("COMMENT_STOP",r"\*\/"),
-
-		("ARIOP",r"\+|\-|\*|\/"),
-		("RELOP",r"<|<=|>|>=|==|\!="),
-		("ATTR",r"="),
-		("END_COMMAND",r"\;"),
-		("COMMA",r"\,"),
-		
-		("P_OPEN",r"\("),
-		("P_CLOSE",r"\)"),
-
-		("S_OPEN",r"\["),
-		("S_CLOSE",r"\]"),
-
-		("B_OPEN",r"\{"),
-		("B_CLOSE",r"\}"),
-
-
-		("ID",r"[a-zA-Z]+"),
-		("NUM",r"[0-9]+"),
-		("UNKNOW",r"[^ \t\n]+"),
-	])
+	lexer = ox.make_lexer(TOKENS_DEFINITION)
 	code=f.read()
 	try:
 		ans=lexer(code)

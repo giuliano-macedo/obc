@@ -1,3 +1,5 @@
 toolz
 sidekick==0.3.0
 ox-parser
+lark-parser >= 0.7.2
+graphviz

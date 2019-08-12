@@ -1,0 +1,24 @@
+start : block
+block : vars_def* (command)*
+block_in_brackets : B_OPEN (block)* B_CLOSE 
+vars_def : INT ID (COMMA ID)* END_COMMAND
+command : command_simple
+	| command_compound
+	| command_conditional
+	| command_loop 
+command_simple : (
+	| ID ATTR aritexp
+	| RETURN [aritexp] ) END_COMMAND
+command_compound : (INT|VOID) ID P_OPEN (VOID|(INT ID (COMMA INT ID)*))  P_CLOSE block_in_brackets
+command_conditional : IF P_OPEN binexp P_CLOSE block_in_brackets [ELSE block_in_brackets]
+command_loop : WHILE P_OPEN binexp P_CLOSE block_in_brackets
+aritexp : 
+	| aritexp ARIOP aritexp
+	| P_OPEN aritexp ARIOP aritexp P_CLOSE
+	| ID
+	| NUM
+binexp : 
+	| binexp RELOP binexp
+	| P_OPEN binexp ARIOP binexp P_CLOSE
+	| ID
+	| NUM
