@@ -1,24 +1,57 @@
-start : block
-block : vars_def* (command)*
-block_in_brackets : B_OPEN (block)* B_CLOSE 
-vars_def : INT ID (COMMA ID)* END_COMMAND
-command : command_simple
-	| command_compound
-	| command_conditional
-	| command_loop 
-command_simple : (
-	| ID ATTR aritexp
-	| RETURN [aritexp] ) END_COMMAND
-command_compound : (INT|VOID) ID P_OPEN (VOID|(INT ID (COMMA INT ID)*))  P_CLOSE block_in_brackets
-command_conditional : IF P_OPEN binexp P_CLOSE block_in_brackets [ELSE block_in_brackets]
-command_loop : WHILE P_OPEN binexp P_CLOSE block_in_brackets
-aritexp : 
-	| aritexp ARIOP aritexp
-	| P_OPEN aritexp ARIOP aritexp P_CLOSE
-	| ID
-	| NUM
-binexp : 
-	| binexp RELOP binexp
-	| P_OPEN binexp ARIOP binexp P_CLOSE
-	| ID
-	| NUM
+_main: programa
+programa: lista_declaracoes
+lista_declaracoes: lista_declaracoes declaracao 
+	| declaracao
+declaracao: declaracao_variaveis
+	| declaracao_funcoes
+tipo: "int"
+    | "void"
+declaracao_funcoes: tipo ID "(" parametros ")" declaracao_composta
+parametros: lista_parametros "," param
+    | param
+declaracao_composta: ( declaracao_locais lista_comandos )*
+declaracao_locais: declaracao_locais declaracao_variaveis
+    | 
+lista_comandos: lista_comandos comando
+    |
+comando: declaracao_expressao
+    | declaracao_composta 
+    | declaracao_selecao 
+    | declaracao_iteracao 
+    | declaracao_retorno
+declaracao_expressao: expressao ";" 
+    | ";"
+declaracao_selecao: "if" "(" expressao ")" comando 
+    | "if" "(" expressao ")" comando "else" comando
+declaracao_iteracao: "while" "(" expressao ")" comando
+declaracao_retorno: "return" ";" 
+    | "return" expressao ";"
+expressao: variavel "=" expressao 
+    | expressao_simples
+variavel: ID 
+    | ID "[" expressao "]"
+expressao_simples: soma_expressao op_relacional soma_expressao 
+    | soma_expressao
+op_relacional: "<=" 
+    | "<"
+    | ">"
+    | ">="
+    | "=="
+    | "!="
+soma_expressao: soma_expressao soma termo 
+    | termo
+soma: "+" 
+    | "-"
+termo: termo mult fator 
+    | fator
+mult: "*" 
+    | "/"
+fator: "(" expressao ")" 
+    | variavel 
+    | ativacao 
+    | NUM
+ativacao: ID "(" argumentos ")"
+argumentos: lista_argumentos 
+    | 
+lista_argumentos: lista_argumentos "," expressao 
+    | expressao
