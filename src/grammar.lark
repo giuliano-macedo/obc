@@ -3,11 +3,17 @@ lista_declaracoes: lista_declaracoes declaracao
 	| declaracao
 declaracao: declaracao_variaveis
 	| declaracao_funcoes
+declaracao_variaveis : tipo ID ";" 
+    | tipo ID "[" NUM "]" ";"
 tipo: "int"
     | "void"
 declaracao_funcoes: tipo ID "(" parametros ")" declaracao_composta
-parametros: lista_parametros "," param
+parametros: lista_parametros
+    | "void"
+lista_parametros :lista_parametros "," param
     | param
+param :  tipo ID
+    | tipo ID "[" "]"
 declaracao_composta: ( declaracao_locais lista_comandos )*
 declaracao_locais: declaracao_locais declaracao_variaveis
     | 
