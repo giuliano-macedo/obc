@@ -45,12 +45,13 @@ def remove_comment(tokens):
 	for i,token in enumerate(tokens):
 		if state==0:
 			if token.type=="COMMENT_START":
+				toremove.append(i)
 				state+=1
 		elif state==1:
+			toremove.append(i)
 			if token.type=="COMMENT_STOP":
 				state=0
-			else:
-				toremove.append(i)
+			
 	if state==1:
 		print(f"[ERRO] um comentário não tem fim!")
 	multipop(tokens,toremove)
