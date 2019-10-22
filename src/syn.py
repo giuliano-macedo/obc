@@ -41,7 +41,7 @@ if __name__ == '__main__':
 	parser.add_argument("-C","--complete-tree", action='store_true')
 	args=parser.parse_args()
 
-	lark = Lark(grammar,parser='lalr',lexer=Lex)
+	lark = Lark(grammar,parser='lalr',lexer=Lex,start="programa")
 	_input=json.load(args.input)
 	tree = lark.parse(_input["tokens"])
 

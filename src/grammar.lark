@@ -1,4 +1,3 @@
-_main: programa
 programa: lista_declaracoes
 lista_declaracoes: lista_declaracoes declaracao 
 	| declaracao
