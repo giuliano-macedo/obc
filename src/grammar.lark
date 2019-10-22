@@ -3,18 +3,18 @@ lista_declaracoes: lista_declaracoes declaracao
 	| declaracao
 declaracao: declaracao_variaveis
 	| declaracao_funcoes
-declaracao_variaveis : tipo ID ";" 
-    | tipo ID "[" NUM "]" ";"
-tipo: "int"
-    | "void"
-declaracao_funcoes: tipo ID "(" parametros ")" declaracao_composta
+declaracao_variaveis : tipo ID END_COMMAND 
+    | tipo ID S_OPEN NUM S_CLOSE END_COMMAND
+tipo: INT
+    | VOID
+declaracao_funcoes: tipo ID P_OPEN parametros P_CLOSE declaracao_composta
 parametros: lista_parametros
-    | "void"
-lista_parametros :lista_parametros "," param
+    | VOID
+lista_parametros :lista_parametros COMMA param
     | param
 param :  tipo ID
-    | tipo ID "[" "]"
-declaracao_composta: ( declaracao_locais lista_comandos )*
+    | tipo ID S_OPEN S_CLOSE
+declaracao_composta: B_OPEN declaracao_locais lista_comandos B_CLOSE
 declaracao_locais: declaracao_locais declaracao_variaveis
     | 
 lista_comandos: lista_comandos comando
@@ -24,39 +24,32 @@ comando: declaracao_expressao
     | declaracao_selecao 
     | declaracao_iteracao 
     | declaracao_retorno
-declaracao_expressao: expressao ";" 
-    | ";"
-declaracao_selecao: "if" "(" expressao ")" comando 
-    | "if" "(" expressao ")" comando "else" comando
-declaracao_iteracao: "while" "(" expressao ")" comando
-declaracao_retorno: "return" ";" 
-    | "return" expressao ";"
-expressao: variavel "=" expressao 
+declaracao_expressao: expressao END_COMMAND 
+    | END_COMMAND
+declaracao_selecao: IF P_OPEN expressao P_CLOSE comando 
+    | IF P_OPEN expressao P_CLOSE comando ELSE comando
+declaracao_iteracao: WHILE P_OPEN expressao P_CLOSE comando
+declaracao_retorno: RETURN END_COMMAND 
+    | RETURN expressao END_COMMAND
+expressao: variavel ATTR expressao 
     | expressao_simples
 variavel: ID 
-    | ID "[" expressao "]"
+    | ID S_OPEN expressao S_CLOSE
 expressao_simples: soma_expressao op_relacional soma_expressao 
     | soma_expressao
-op_relacional: "<=" 
-    | "<"
-    | ">"
-    | ">="
-    | "=="
-    | "!="
+op_relacional: RELOP
 soma_expressao: soma_expressao soma termo 
     | termo
-soma: "+" 
-    | "-"
+soma: SUMOP
 termo: termo mult fator 
     | fator
-mult: "*" 
-    | "/"
-fator: "(" expressao ")" 
+mult: MULTOP
+fator: P_OPEN expressao P_CLOSE
     | variavel 
     | ativacao 
     | NUM
-ativacao: ID "(" argumentos ")"
+ativacao: ID P_OPEN argumentos P_CLOSE
 argumentos: lista_argumentos 
     | 
-lista_argumentos: lista_argumentos "," expressao 
+lista_argumentos: lista_argumentos COMMA expressao 
     | expressao
