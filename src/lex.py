@@ -117,11 +117,16 @@ if __name__=="__main__":
 
 	out=lex(args.input)
 	print("Saída:",el_out(out))
-	
-	args.output.write("{\"tokens\":[\n")
-	json_str=lambda s:json.dumps(s,ensure_ascii=False)
-	for token_name,token_value in ((token.type,token.value) for token in out):
-		args.output.write(f"\t[{json_str(token_name)},{json_str(token_value)}],\n")
-	if len(out)!=0:
-		args.output.seek(args.output.tell()-2)
-	args.output.write("\n]}")
+
+	json.dump({
+		"filename":args.input.name,
+		"tokens":[(token.type,token.value,token.lineno,token.lexpos) for token in out]
+	},args.output,indent=4)
+
+	# args.output.write("{\"tokens\":[\n")
+	# json_str=lambda s:json.dumps(s,ensure_ascii=False)
+	# for token_name,token_value in ((token.type,token.value) for token in out):
+	# 	args.output.write(f"\t[{json_str(token_name)},{json_str(token_value)}],\n")
+	# if len(out)!=0:
+	# 	args.output.seek(args.output.tell()-2)
+	# args.output.write("\n]}")
