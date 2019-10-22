@@ -15,6 +15,8 @@ TOKENS_DEFINITION=[
 	("COMMENT_START",r"\/\*"),
 	("COMMENT_STOP",r"\*\/"),
 
+	("SUMOP",r"\+|\-"),
+	("MULTOP",r"\*|\/"),
 	("ARIOP",r"\+|\-|\*|\/"),
 	("RELOP",r"<|<=|>|>=|==|\!="),
 	("ATTR",r"="),

@@ -2,6 +2,7 @@
 from lex import TOKENS_DEFINITION
 from lark import Lark
 from lark.lexer import Lexer, Token
+from lark.grammar import Terminal
 from graphviz import Digraph
 import json
 import argparse
@@ -11,10 +12,8 @@ TOKENS_NAMES=[t[0] for t in TOKENS_DEFINITION]
 class Lex(Lexer):
 	def __init__(self, lexer_conf):
 		pass
-
 	def lex(self, data):
 		for obj in data:
-			if obj[0] not in {"COMMENT_START", "COMMENT_STOP"}:
 				yield Token(obj[0],obj[1])
 def build_dot(tree,dot,complete=False):
 	istoken=lambda obj:type(obj)==Token
@@ -49,5 +48,5 @@ if __name__ == '__main__':
 	if args.complete_tree:
 		dot.attr(rankdir="LR")
 	build_dot(tree,dot,complete=args.complete_tree)
-	dot.render('tree1.dot', view=True)
+	dot.view('tree1', cleanup=True,quiet_view=True)
 	print(tree.pretty())
