@@ -14,7 +14,7 @@ class Lex(Lexer):
 		pass
 	def lex(self, data):
 		for obj in data:
-				yield Token(obj[0],obj[1])
+				yield Token(obj[0],obj[1],line=obj[2],column=obj[3],pos_in_stream=obj[4])
 def build_dot(tree,dot,complete=False):
 	istoken=lambda obj:type(obj)==Token
 	if complete:
@@ -40,7 +40,7 @@ if __name__ == '__main__':
 	parser.add_argument("-C","--complete-tree", action='store_true')
 	args=parser.parse_args()
 
-	lark = Lark(grammar,parser='lalr',lexer=Lex,start="programa")
+	lark = Lark(grammar,parser='lalr',lexer=Lex,start="programa",propagate_positions=True)
 	_input=json.load(args.input)
 	tree = lark.parse(_input["tokens"])
 

@@ -122,7 +122,7 @@ if __name__=="__main__":
 
 	json.dump({
 		"filename":args.input.name,
-		"tokens":[(token.type,token.value,token.line,token.column) for token in out]
+		"tokens":[(token.type,token.value,token.line,token.column,token.pos_in_stream) for token in out]
 	},args.output,indent=4)
 
 	# args.output.write("{\"tokens\":[\n")
