@@ -18,7 +18,7 @@ class Lex(Lexer):
 def build_dot(tree,dot,complete=False):
 	istoken=lambda obj:type(obj)==Token
 	if complete:
-		getData=lambda obj:f"\<{obj.type},{obj.value}\>" if istoken(obj) else obj.data
+		getData=lambda obj:rf"\<{obj.type},{obj.value}\>" if istoken(obj) else obj.data
 	else :
 		getData=lambda obj:obj if istoken(obj) else obj.data
 	h=str(id(tree))
