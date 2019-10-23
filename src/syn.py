@@ -2,6 +2,7 @@
 from lex import TOKENS_DEFINITION
 from lark import Lark
 from lark.lexer import Lexer, Token
+from lark.exceptions import UnexpectedToken
 from lark.grammar import Terminal
 from graphviz import Digraph
 import json
@@ -112,9 +113,18 @@ if __name__ == '__main__':
 
 	lark = Lark(grammar,parser='lalr',lexer=Lex,start="programa",propagate_positions=True)
 	_input=json.load(args.input)
+	tokens=_input["tokens"]
 	if not args.no_error_recovery:
-		search_and_replace(open(_input["filename"]).read(),_input["tokens"])
-	tree = lark.parse(_input["tokens"])
+		search_and_replace(open(_input["filename"]).read(),tokens)
+	try:
+		tree = lark.parse(tokens)
+	except UnexpectedToken as e:
+		print(e.line)
+		print(e.column)
+		# print(dir(e))
+		print(repr(e.token))
+		print(e.expected)
+		exit()
 
 	dot = Digraph()
 	if args.complete_tree:
