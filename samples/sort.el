@@ -24,7 +24,7 @@ void sort( int a[], int low, int high)
   i = low;
   while (i < high-1)
     { int t;
-      k = minloc(a, i high);
+      k = minloc(a, i, high);
       t = a[k];
       a[k] = a[i];
       a[i] = t;
