@@ -9,9 +9,38 @@ import argparse
 
 TOKENS_NAMES=[t[0] for t in TOKENS_DEFINITION]
 
+def join_line_from_tokens(tokens,line):
+	##SLOW
+	return " ".join((token[1] for token in tokens if token[2]==line))
 def forgot_comma(code,tokens):
 	"você esqueceu do ',' ?"
-	pass
+	skip=False
+	for i in range(len(tokens)-1):
+		token=tokens[i]
+		token_next=tokens[i+1]
+		if skip:
+			skip=False
+			continue
+		if token[0]=="ID" and tokens[i+1][0]=="ID":
+			if token[2]!=token_next[2]: #if pair of tokens are in differente lines
+				continue
+			print(token,token_next)
+			token_line=token[2]
+			old_line=join_line_from_tokens(tokens,token_line)
+
+			token_len=len(token[1])
+			tokens.insert(i+1,
+				("COMMA",",",
+					token_line,
+					token[3]+token_len,
+					token[4]+token_len
+				)
+			)
+
+			new_line=join_line_from_tokens(tokens,token_line)
+			skip=True
+			yield old_line,new_line
+
 def forgot_semicolomn(code,tokens):
 	"você esqueceu do ';' ?"
 	for i,line in enumerate(code.split("\n")):
@@ -39,7 +68,7 @@ def tokens_in_line(tokens,line):
 	return [i for i,token in enumerate(tokens) if token[2]==line+1]
 def search_and_replace(code,tokens):
 	hooks=[
-		# forgot_comma,
+		forgot_comma,
 		forgot_semicolomn
 	]
 	for rule_func in hooks:
