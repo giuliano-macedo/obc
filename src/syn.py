@@ -107,11 +107,13 @@ if __name__ == '__main__':
 	parser.add_argument("input",type=argparse.FileType('r'),default="tokens.json",nargs='?')
 	parser.add_argument("-o","--output",type=argparse.FileType('w'),default="tree1.json")
 	parser.add_argument("-C","--complete-tree", action='store_true')
+	parser.add_argument("--no-error-recovery", action='store_true')
 	args=parser.parse_args()
 
 	lark = Lark(grammar,parser='lalr',lexer=Lex,start="programa",propagate_positions=True)
 	_input=json.load(args.input)
-	search_and_replace(open(_input["filename"]).read(),_input["tokens"])
+	if not args.no_error_recovery:
+		search_and_replace(open(_input["filename"]).read(),_input["tokens"])
 	tree = lark.parse(_input["tokens"])
 
 	dot = Digraph()
