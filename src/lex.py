@@ -2,6 +2,7 @@
 import argparse
 import os
 import json
+import lark
 
 st=lambda s:(s.upper(),s) #SIMPLE_TOKEN
 TOKENS_DEFINITION=[
@@ -36,11 +37,6 @@ TOKENS_DEFINITION=[
 	("NUM",r"[0-9]+"),
 	("UNKNOW",r"[^ \t\n]+"),
 ]
-def clean_ox_mess():
-	try:os.remove("parsetab.py")
-	except Exception:pass
-	try:os.remove("parser.out")
-	except Exception:pass
 def remove_comment(tokens):
 	toremove=[]
 	state=0
@@ -93,16 +89,20 @@ def check_unknows_neighbors(tokens):
 			
 	
 def lex(f):
-	import ox
-	lexer = ox.make_lexer(TOKENS_DEFINITION)
+	head=f"start:({'|'.join((k for k,v in TOKENS_DEFINITION))})*\n"
+	body="\n".join((f"{k}:/{v}/" for k,v in TOKENS_DEFINITION))
+	ignore="""
+	%import common.WS
+	%ignore WS\n"""
+	grammar=head+body+ignore
+
+	lexer=lark.Lark(grammar)
 	code=f.read()
 	try:
-		ans=lexer(code)
+		ans=lexer.parse(code).children
 	except Exception as e:
 		print(f"[ERRO] erro léxico no arquivo {f.name}")
-		clean_ox_mess()
 		raise e
-	clean_ox_mess()
 	remove_comment(ans)
 	remove_unknows(ans)
 	check_unknows_neighbors(ans)
@@ -122,7 +122,7 @@ if __name__=="__main__":
 
 	json.dump({
 		"filename":args.input.name,
-		"tokens":[(token.type,token.value,token.lineno,token.lexpos) for token in out]
+		"tokens":[(token.type,token.value,token.line,token.column) for token in out]
 	},args.output,indent=4)
 
 	# args.output.write("{\"tokens\":[\n")
