@@ -100,8 +100,7 @@ if __name__ == '__main__':
 	tokens=_input["tokens"]
 	code=open(_input["filename"]).read()
 	code_splitted=code.split("\n")
-	garantia_max=10000
-	for garantia in range(garantia_max):
+	while True:
 		if len(tokens)==0:
 			print("[ERRO]impossivel recuperar de erros")
 			exit(-1)
@@ -135,9 +134,6 @@ if __name__ == '__main__':
 		print(f"[AVISO] a linha a seguir foi ignoradas por erro sintáxico:")
 		for line in removed_lines:
 			print(repr(code_splitted[line-1].strip()),line)
-	if garantia == garantia_max:
-		print("[ERRO]impossivel recuperar de erros")
-		exit(-1)
 	dot = Digraph()
 	if args.complete_tree:
 		dot.attr(rankdir="LR")
