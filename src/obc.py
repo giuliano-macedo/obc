@@ -8,6 +8,6 @@ parser.add_argument("input",type=argparse.FileType('r'),default="tokens.json",na
 args=parser.parse_args()
 print("-"*16,"ANALISADOR LÉXICO","-"*16)
 os.system(f"./lex.py {args.input.name}")
-print("-"*16,"ANALISADOR semantico","-"*16)
+print("-"*16,"ANALISADOR SINÁTICO","-"*16)
 os.system(f"./syn.py tokens.json")
 # os.system(f"./sem.py {args.input.name}")

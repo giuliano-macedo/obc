@@ -132,7 +132,7 @@ if __name__ == '__main__':
 			continue
 		#----------------remove whole line or block----------------
 		removed_lines=remove_line_or_block(tokens,e.line)
-		print(f"[AVISO] a linha a seguir foram ignoradas por erro sintáxico:")
+		print(f"[AVISO] a linha a seguir foi ignoradas por erro sintáxico:")
 		for line in removed_lines:
 			print(repr(code_splitted[line-1].strip()),line)
 	if garantia == garantia_max:
