@@ -93,6 +93,7 @@ if __name__ == '__main__':
 	parser.add_argument("input",type=argparse.FileType('r'),default="tokens.json",nargs='?')
 	parser.add_argument("-o","--output",type=argparse.FileType('w'),default="tree1.json")
 	parser.add_argument("-C","--complete-tree", action='store_true')
+	parser.add_argument("-f","--force-parse", action='store_true')
 	args=parser.parse_args()
 
 	lark = Lark(grammar,parser='lalr',lexer=Lex,start="programa",propagate_positions=True)
@@ -100,6 +101,7 @@ if __name__ == '__main__':
 	tokens=_input["tokens"]
 	code=open(_input["filename"]).read()
 	code_splitted=code.split("\n")
+	failed=False
 	while True:
 		if len(tokens)==0:
 			print("[ERRO]impossivel recuperar de erros")
@@ -131,9 +133,13 @@ if __name__ == '__main__':
 			continue
 		#----------------remove whole line or block----------------
 		removed_lines=remove_line_or_block(tokens,e.line)
-		print(f"[AVISO] a linha a seguir foi ignoradas por erro sintáxico:")
+		print(f"[ERRO] a linha a seguir contém um erro sintáxico:")
+		failed=True
 		for line in removed_lines:
-			print(repr(code_splitted[line-1].strip()),line)
+			print("\t",repr(code_splitted[line-1].strip()),"linha :",line)
+	if failed and not args.force_parse:
+		print("Houve um erro sintático, portanto nenhuma arvore foi gerada")
+		exit(-1)
 	dot = Digraph()
 	if args.complete_tree:
 		dot.attr(rankdir="LR")
