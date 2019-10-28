@@ -71,19 +71,12 @@ def inform_line_changed(tokens,code_splitted,line):
 	old_line=code_splitted[line-1].strip()
 	new_line=get_line_from_tokens(tokens,line)
 	print(f"[AVISO] linha '{old_line}' considerada como '{new_line}', número da linha :{line}")
-def is_block(tokens,start):
-	#TODO
-	return False
-def find_block(tokens,start):
-	pass
-def remove_line_or_block(tokens,line):
+def remove_line(tokens,line):
 	ans=[line]
 	line_start_index=next(i for i,token in enumerate(tokens) if token[2]==line)
-	if is_block(tokens,line_start_index):
-		ans+=list(find_block(tokens,line_start_index))
 	ans_set=set(ans)
 	for i in range(len(tokens)-1,-1,-1):
-		if tokens[i][2] in ans_set:
+		if tokens[i][2] in ans_set and tokens[i][0] != "$END":
 			# print("removing ",tokens[i])
 			tokens.pop(i)
 	return ans
@@ -131,8 +124,8 @@ if __name__ == '__main__':
 			modified_tokens.pop(index_added)
 		if sucess:
 			continue
-		#----------------remove whole line or block----------------
-		removed_lines=remove_line_or_block(tokens,e.line)
+		#----------------remove whole line----------------
+		removed_lines=remove_line(tokens,e.line)
 		print(f"[ERRO] a linha a seguir contém um erro sintáxico:")
 		failed=True
 		for line in removed_lines:
