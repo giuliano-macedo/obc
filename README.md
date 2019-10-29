@@ -3,7 +3,7 @@ This project implements a compiler for a simplified version of C
 using python and the Lark library
 
 ## What is the difference between this language and C?
-* only has 2 data types int and void
+* only has 2 data types, int and void
 * does not support recursion
 * does not support structs
 * does not support pointers
