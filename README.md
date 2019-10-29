@@ -1,5 +1,8 @@
-# obc
-obc - Oliveira-Bailo Compiler
+# OBC - Simple C Compiler
+This project implements a compiler for a simplified version of C (only has 2 data types (int,void) does not support recursion, etc)
+using python and the Lark library
+
+
 ## Prerequisites
 
 * python 3.7 (3.5 won't work, some source files have literal string interpolation)
