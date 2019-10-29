@@ -1,8 +1,9 @@
 # OBC - Simple C Compiler
 This project implements a compiler for a simplified version of C
-using python and the Lark library
+using python and Lark parsing library
 
 ## What is the difference between this language and C?
+
 * only has 2 data types, int and void
 * does not support recursion
 * does not support structs
@@ -11,7 +12,7 @@ using python and the Lark library
 
 ## Prerequisites
 
-* python 3.7 (3.5 won't work, some source files have literal string interpolation)
+* python >= 3.6 (some source files have literal string interpolation)
 * pip
 
 ## Installing
