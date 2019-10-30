@@ -13,7 +13,7 @@ using python and Lark parsing library
 * structs
 * pointers
 
-for more information about it's syntax read `src/grammar.lark`
+for more information about it's syntax read [`src/grammar.lark`](src/grammar.lark)
 ## Prerequisites
 
 * python >= 3.6 (some source files have literal string interpolation)
