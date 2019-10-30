@@ -6,7 +6,7 @@ using python and Lark parsing library
 * only has 2 data types, int and void (even though you can't declare negative numbers)
 * there is no preprocessor
 
-### it does not support the following features
+### it does not support the following C features
 * unary operators
 * bitwise operators
 * ternary operators
