@@ -3,13 +3,17 @@ This project implements a compiler for a simplified version of C
 using python and Lark parsing library
 
 ## What is the difference between this language and C?
+* only has 2 data types, int and void (even though you can't declare negative numbers)
+* there is no preprocessor
 
-* only has 2 data types, int and void
-* does not support recursion
-* does not support structs
-* does not support pointers
-* no preprocessor
+### it does not support the following features
+* unary operators
+* bitwise operators
+* ternary operators
+* structs
+* pointers
 
+for more information about it's syntax read `src/grammar.lark`
 ## Prerequisites
 
 * python >= 3.6 (some source files have literal string interpolation)
