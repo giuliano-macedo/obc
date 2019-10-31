@@ -80,13 +80,13 @@ class Visitor(lark.Visitor):
 			args.append(self.symtable.get(param_scope,param_name))
 		
 	def __var_already_declared(previous):
-		f_or_var='variavel' if previous.is_var() else 'função'
+		f_or_var='variável' if previous.is_var() else 'função'
 		return f"{f_or_var} {repr(previous.name)} ja foi declarada como {repr(previous.type)} na linha {previous.line}"
 	def variavel(self,tree):
 		ID=tree.children[0]
 		if not self.symtable.get(tree,ID.value):
 			self.onerr(
 				tree.line,
-				f"variavel {repr(ID.value)} não declarada"
+				f"variável {repr(ID.value)} não declarada"
 			)
 			self.ok=False
