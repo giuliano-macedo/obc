@@ -4,7 +4,7 @@ import os
 from collections import namedtuple
 from lex import lex
 from syn import syn
-# from sem import sem
+from sem import sem
 # from icg import icg
 # from cg import cg
 class Hooks:
@@ -31,14 +31,19 @@ parser.add_argument("--lex-show",action="store_true",help="no lex process tokens
 
 parser.add_argument("-sC","--syn-complete-tree", action='store_true',help="render complete syntax tree, with full token leaves")
 parser.add_argument("-sN","--syn-dont-try-to-fix-errs", action='store_true',help="disable parser ability to try to fix errors")
-parser.add_argument("--syn-no-output",action="store_true",help="no syn process output ('syantax_tree.pdf','syntax_tree.dot')")
-parser.add_argument("--syn-show",action="store_false",help="no syn process syntax_tree.pdf show")
+parser.add_argument("--syn-no-output",action="store_true",help="no syn process output ('syntax.pdf','syntax_tree.dot')")
+parser.add_argument("--syn-show",action="store_true",help="no syn process syntax_tree.pdf show")
+
+parser.add_argument("-SC","--sem-complete-tree", action='store_true',help="render complete semantic tree, with full token leaves")
+parser.add_argument("--sem-no-output",action="store_false",help="no sem process output ('semantic_tree.pdf','semantic_tree.dot')")
+parser.add_argument("--sem-show",action="store_true",help="no sem process semantic_tree.pdf show")
+
 args=parser.parse_args()
 
 hooks=Hooks()
 hooks.add_entry("lex","ANALISADOR LÉXICO",lex)
 hooks.add_entry("syn","ANALISADOR SINÁTICO",syn),
-# hooks.add_entry("sem","ANALISADOR SEMÂNTICO",sem)
+hooks.add_entry("sem","ANALISADOR SEMÂNTICO",sem)
 # hooks.add_entry("icg","GERADOR DE CÓDIGO INTERMEDIÁRIO",icg)
 # hooks.add_entry("cg","GERADOR DE CÓDIGO",cg)
 
