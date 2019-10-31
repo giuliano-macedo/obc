@@ -25,6 +25,18 @@ class Symtable:
 			line=line,
 			arguments=args
 		)
+	def add_vector(self,name,_type,scope,line,size):
+		var=self.table.get(scope+"."+name,None)
+		if var!=None:
+			return var
+		self.table[scope+"."+name]=VectorEntry(
+			name=name,
+			_type=_type,
+			scope=scope,
+			line=line,
+			arguments=args,
+			size=size
+		)
 	def __getitem__(self,k):
 		return self.table[k]
 	def get(self,scope,k):

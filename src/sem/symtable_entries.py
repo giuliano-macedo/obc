@@ -22,7 +22,7 @@ class VariableEntry(BaseEntry):
 		self.initialized=False
 	def is_function(self):
 		return False
-	def is_variable(self):
+	def is_var(self):
 		return True
 	def is_vector(self):
 		return False
@@ -34,7 +34,7 @@ class VectorEntry(VariableEntry):
 		self.size=size
 	def is_function(self):
 		return False
-	def is_variable(self):
+	def is_var(self):
 		return True
 	def is_vector(self):
 		return True
@@ -46,7 +46,7 @@ class FunctionEntry(BaseEntry):
 		self.args=arguments
 	def is_function(self):
 		return True
-	def is_variable(self):
+	def is_var(self):
 		return False
 	def is_vector(self):
 		return False
