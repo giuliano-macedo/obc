@@ -130,4 +130,4 @@ def syn(fname,tokens,complete_tree,dont_try_to_fix_errs,no_output,show):
 		build_dot(tree,dot,complete=complete_tree)
 		dot.save("syntax_tree.dot")
 		dot.render('syntax_tree',format="pdf", cleanup=True,view=show,quiet_view=show)
-	return b,fname,tree
+	return b,code_splitted,fname,tree
