@@ -38,3 +38,5 @@ and call the compiler on some source file
 ```bash
 ./obc.py [SOURCE FILE PATH]
 ```
+
+for more options use `/obc.py --help`
