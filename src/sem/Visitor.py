@@ -22,7 +22,10 @@ class Visitor(lark.Visitor):
 				line=tree.meta.line
 			)
 			if previous:
-				self.onwarn(tree.meta.line,f"{'variavel' if previous.is_var() else 'função'} {repr(previous.name)} ja declarada como {repr(previous.type)}")
+				self.onerr(
+					tree.meta.line,
+					Visitor.__var_already_declared(previous)
+				)
 				self.ok=False
 		else:
 			NotImplemented # vector declaration
@@ -44,7 +47,10 @@ class Visitor(lark.Visitor):
 			args=args
 		)
 		if previous:
-			print("funcao ja declarada ",ID.value)
+			self.onerr(
+				tree.meta.line,
+				Visitor.__var_already_declared(previous)
+			)
 			self.ok=False
 		#-------------------------------------------------------------
 		#get params and add them to symtable
@@ -66,13 +72,21 @@ class Visitor(lark.Visitor):
 				raise NotImplemented # vector declaration
 
 			if previous:
-				print("variavel ja declarada",param_ID.value) #TODO BETER msg
+				self.onerr(
+					param.meta.line,
+					Visitor.__var_already_declared(previous)
+				)
 				self.ok=False
 			args.append(self.symtable.get(param_scope,param_name))
 		
-
+	def __var_already_declared(previous):
+		f_or_var='variavel' if previous.is_var() else 'função'
+		return f"{f_or_var} {repr(previous.name)} ja foi declarada como {repr(previous.type)} na linha {previous.line}"
 	def variavel(self,tree):
 		ID=tree.children[0]
 		if not self.symtable.get(tree,ID.value):
+			self.onerr(
+				tree.line,
+				f"variavel {repr(ID.value)} não declarada"
+			)
 			self.ok=False
-			print("varivel não definida ",ID)

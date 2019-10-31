@@ -11,14 +11,18 @@ def shape_tree(subtree,parent=None):
 	for children in subtree.children:
 		shape_tree(children,subtree)
 def onerr(code_splitted,line,msg):
-	log_err(code_splitted[line-1].strip())
+	line_str=code_splitted[line-1].strip()
+	log_err(f"na linha {repr(line_str)} número da linha: {line}")
+	print(f"\t{msg}")
 def onwarn(code_splitted,line,msg):
-	log_war(code_splitted[line-1].strip())
+	line_str=code_splitted[line-1].strip()
+	log_war(f"na linha {repr(line_str)} número da linha: {line}")
+	print(f"\t{msg}")
 def sem(code_splitted,fname,tree,complete_tree,no_output,show):
 	b=True
 	shape_tree(tree)
 	symtable=Symtable()
-	visitor=Visitor(symtable,onerr=partial(onerr,(code_splitted)),onwarn=onwarn)
+	visitor=Visitor(symtable,onerr=partial(onerr,code_splitted),onwarn=partial(onwarn,code_splitted))
 	visitor.visit_top_down(tree)
 	b&=visitor.ok
 	print("-"*16,"SYMTABLE","-"*16)
