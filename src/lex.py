@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
-import argparse
+import graphviz
 import os
 import json
 import lark
+from utils import log_err
 
 st=lambda s:(s.upper(),s) #SIMPLE_TOKEN
 TOKENS_DEFINITION=[
@@ -38,6 +38,7 @@ TOKENS_DEFINITION=[
 	("UNKNOW",r"[^ \t\n]+"),
 ]
 def remove_comment(tokens):
+	ans=True
 	toremove=[]
 	state=0
 	for i,token in enumerate(tokens):
@@ -51,22 +52,28 @@ def remove_comment(tokens):
 				state=0
 			
 	if state==1:
-		print(f"[ERRO] um comentário não tem fim!")
+		log_err(f"um comentário não tem fim!")
+		ans=False
 	multipop(tokens,toremove)
+	return ans
 
 def multipop(l,trm):
 	# remove all indices in trm to remove from l
 	for i in trm[::-1]:
 		l.pop(i)
 def remove_unknows(tokens):
+	ans=True
 	toremove=[]
 	for i,token in enumerate(tokens):
 		if token.type=="UNKNOW":
-			print(f"[ERRO] token desconhecido {token.value}")
+			log_err(f"token desconhecido {token.value}")
+			ans=False
 			toremove.append(i)
 	multipop(tokens,toremove)
+	return ans
 def check_unknows_neighbors(tokens):
 	# não podem ocorrer entre identificadores, números e palavras-chaves
+	ans=True
 	s=set(["IF","ELSE","VOID","RETURN","WHILE","ID","NUM"])
 	state=0
 	l,r=None,None
@@ -83,12 +90,21 @@ def check_unknows_neighbors(tokens):
 				if i!=len(tokens)-1:
 					r=tokens[i+1]
 					if (l.type in s) and (l.type==r.type):
-							print("[ERRO] comentários não podem ocorrer no meio de identificadores, números e palavras-chaves")
+						ans=False
+						log_err("comentários não podem ocorrer no meio de identificadores, números e palavras-chaves")
 				l,r=None,None
 				state=0
+	return ans
 			
-	
-def lex(f):
+def make_dot_label(tokens):
+	ans=[]
+	for token in tokens:
+		token.value="\\"+token.value if len(token.value)==1 else token.value
+		row=rf"\<{token.type},{token.value}\>"
+		ans.append(row)
+	return "{"+"|".join(ans)+"}"
+def lex(f,no_output=False,show=False):
+	b=True
 	head=f"start:({'|'.join((k for k,v in TOKENS_DEFINITION))})*\n"
 	body="\n".join((f"{k}:/{v}/" for k,v in TOKENS_DEFINITION))
 	ignore="""
@@ -101,34 +117,21 @@ def lex(f):
 	try:
 		ans=lexer.parse(code).children
 	except Exception as e:
-		print(f"[ERRO] erro léxico no arquivo {f.name}")
+		log_err(f"erro léxico no arquivo {f.name}")
 		raise e
-	remove_comment(ans)
-	remove_unknows(ans)
-	check_unknows_neighbors(ans)
-	return ans
+	b&=remove_comment(ans)
+	b&=remove_unknows(ans)
+	b&=check_unknows_neighbors(ans)
+	## el_out
+	el_out = lambda tokens:",".join((token.type if token.type in {"ID","NUM"} else token.value for token in tokens))
+	print("Saída:",el_out(ans))
+	g=graph=graphviz.Graph()
+	if not no_output:
+		graph.node("",shape="record",label=make_dot_label(ans))
+		graph.save("tokens.dot")
+		graph.render("tokens",format="pdf",view=show,quiet_view=show)
+		os.unlink("tokens")
+	return b,f.name,ans
 if __name__=="__main__":
-	def el_out(tokens):
-		s=set(("ID","NUM"))
-		return ",".join((token.type if token.type in s else token.value for token in tokens))
-
-	parser=argparse.ArgumentParser()
-	parser.add_argument("input",type=argparse.FileType('r'))
-	parser.add_argument("-o","--output",type=argparse.FileType('w'),default="tokens.json")
-	args=parser.parse_args()
-
-	out=lex(args.input)
-	print("Saída:",el_out(out))
-
-	json.dump({
-		"filename":args.input.name,
-		"tokens":[(token.type,token.value,token.line,token.column,token.pos_in_stream) for token in out]
-	},args.output,indent=4)
-
-	# args.output.write("{\"tokens\":[\n")
-	# json_str=lambda s:json.dumps(s,ensure_ascii=False)
-	# for token_name,token_value in ((token.type,token.value) for token in out):
-	# 	args.output.write(f"\t[{json_str(token_name)},{json_str(token_value)}],\n")
-	# if len(out)!=0:
-	# 	args.output.seek(args.output.tell()-2)
-	# args.output.write("\n]}")
+	ok,tokens=lex(open("../samples/emails.c","r"),True)
+	print(ok)

@@ -1,13 +1,57 @@
 #!/usr/bin/env python3
 import argparse
 import os
+from collections import namedtuple
+from lex import lex
+from syn import syn
+# from sem import sem
+# from icg import icg
+# from cg import cg
+class Hooks:
+	Entry=namedtuple("HooksEntry",["func_name","func","kwargs"])
+	def __init__(self):
+		self.hooks={}
+	def add_entry(self,func_prefix,func_name,func):
+		self.hooks[func_prefix]=Hooks.Entry(func_name,func,{})
+	def add_kwarg_to(self,func_prefix,k,v):
+		self.hooks[func_prefix].kwargs[k]=v
+	def items(self):
+		"""
 
+		Yields:
+			tuple function_name,function"""
+		for v in self.hooks.values():
+			yield v.func_name,lambda *args:v.func(*args,**v.kwargs)
 parser=argparse.ArgumentParser()
-parser.add_argument("input",type=argparse.FileType('r'),default="tokens.json",nargs='?')
-# parser.add_argument("-o","--output",type=argparse.FileType('w'),default="") z
+parser.add_argument("input",type=argparse.FileType('r'))
+parser.add_argument("-P","--pass-through",action="store_true",help="don't stop if some process returns error")
+
+parser.add_argument("--lex-no-output",action="store_true",help="no lex process output ('tokens.pdf','tokens.dot')")
+parser.add_argument("--lex-show",action="store_true",help="no lex process tokens.pdf show")
+
+parser.add_argument("-sC","--syn-complete-tree", action='store_true',help="render complete syntax tree, with full token leaves")
+parser.add_argument("-sN","--syn-dont-try-to-fix-errs", action='store_true',help="disable parser ability to try to fix errors")
+parser.add_argument("--syn-no-output",action="store_true",help="no syn process output ('syantax_tree.pdf','syntax_tree.dot')")
+parser.add_argument("--syn-show",action="store_false",help="no syn process syntax_tree.pdf show")
 args=parser.parse_args()
-print("-"*16,"ANALISADOR LÉXICO","-"*16)
-os.system(f"./lex.py {args.input.name}")
-print("-"*16,"ANALISADOR SINÁTICO","-"*16)
-os.system(f"./syn.py tokens.json")
-# os.system(f"./sem.py {args.input.name}")
+
+hooks=Hooks()
+hooks.add_entry("lex","ANALISADOR LÉXICO",lex)
+hooks.add_entry("syn","ANALISADOR SINÁTICO",syn),
+# hooks.add_entry("sem","ANALISADOR SEMÂNTICO",sem)
+# hooks.add_entry("icg","GERADOR DE CÓDIGO INTERMEDIÁRIO",icg)
+# hooks.add_entry("cg","GERADOR DE CÓDIGO",cg)
+
+for k,v in vars(args).items():
+	k_splitted=k.split("_")
+	if k_splitted[0] not in hooks.hooks:
+		continue
+	kwarg_key="_".join(k_splitted[1:])
+	hooks.add_kwarg_to(k_splitted[0],kwarg_key,v)
+ans=[args.input]
+for name,func in hooks.items():
+	print("-"*16,name,"-"*16)
+	
+	b,*ans=func(*ans)
+	if not b and not args.pass_through:
+		break

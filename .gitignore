@@ -1,6 +1,10 @@
 __pycache__
-res
-tokens.json
-tree1.*
-tree2.*
-tac.py
+tokens.pdf
+tokens.dot
+syntax_tree.dot
+syntax_tree.pdf
+semantic_tree.dot
+semantic_tree.dot
+tac.dot
+tac.pdf
+code.nasm
