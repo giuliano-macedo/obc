@@ -36,7 +36,9 @@ class Symtable:
 				if not added:
 					print("variavel ja declarada",ID.value) #TODO BETER msg
 			else:
-				raise NotImplemented("vector declaration")
+				NotImplemented # vector declaration
+		def declaracao_funcoes(self,tree):
+			NotImplemented #FUCNTIONS
 		def variavel(self,tree):
 
 			ID=tree.children[0]
