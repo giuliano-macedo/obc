@@ -1,6 +1,7 @@
 from collections import deque
 import lark
 from .symtable_entries import VariableEntry,VectorEntry,FunctionEntry
+import graphviz
 class Symtable:
 	def __init__(self):
 		self.table={}
@@ -55,3 +56,27 @@ class Symtable:
 				important.append("")
 			tree=tree.parent
 		return ".".join(important[::-1])
+	def to_graphviz(self):
+		ans=graphviz.Digraph(
+			graph_attr={
+				"rankdir":"LR",
+				"nodesep":"0.5"
+			},
+			node_attr={
+				"shape":"record",
+				"width":".1",
+				"height":".1"
+			}
+		)
+		ans.node("ks",label="|".join(f"<k{i}> {k}" for i,k in enumerate(self.table.keys())))
+		vs=[]
+		for i,values in enumerate(self.table.values()):
+			vs.append(
+				f"{{<v{i}> "+	 
+				"%s}"%"|".join(f"{k}={v}" for k,v in vars(values).items() if not isinstance(v,list))
+			)
+		ans.node("vs",label="|".join(vs))
+		
+		for i in range(len(self.table)):
+			ans.edge(f"ks:k{i}",f"vs:v{i}")
+		return ans

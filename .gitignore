@@ -3,6 +3,8 @@ tokens.pdf
 tokens.dot
 syntax_tree.dot
 syntax_tree.pdf
+symtable.dot
+symtable.pdf
 semantic_tree.dot
 semantic_tree.dot
 tac.dot

@@ -38,7 +38,7 @@ parser.add_argument("--syn-no-output",action="store_true",help="no syn process o
 parser.add_argument("--syn-show",action="store_true",help="no syn process syntax_tree.pdf show")
 
 parser.add_argument("-SC","--sem-complete-tree", action='store_true',help="render complete semantic tree, with full token leaves")
-parser.add_argument("--sem-no-output",action="store_false",help="no sem process output ('semantic_tree.pdf','semantic_tree.dot')")
+parser.add_argument("--sem-no-output",action="store_true",help="no sem process output ('semantic_tree.pdf','semantic_tree.dot')")
 parser.add_argument("--sem-show",action="store_true",help="no sem process semantic_tree.pdf show")
 
 args=parser.parse_args()
