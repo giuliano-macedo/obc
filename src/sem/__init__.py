@@ -48,6 +48,9 @@ def sem(code_splitted,fname,tree,complete_tree,no_output,show):
 			b=False
 			log_err(f"a última função declarada{str1} tem o nome main,{str2} é de tipo void e{str3} tem argumentos")
 		
-	print("-"*16,"SYMTABLE","-"*16)
-	print(*(f"{k}->{repr(v)}" for k,v in symtable.table.items()),sep="\n")
+	if not no_output:
+		symtable_graph=symtable.to_graphviz()
+		#TODO GENERATE ANOTADED TREE
+		symtable_graph.save("symtable.dot")
+		symtable_graph.render('symtable',format="pdf", cleanup=True,view=show,quiet_view=show)
 	return b,tree,symtable
