@@ -18,19 +18,35 @@ class Visitor(lark.Visitor):
 	def declaracao_variaveis(self,tree):
 		tipo=tree.children[0]
 		ID=tree.children[1]
-		if tree.children[2].type=="END_COMMAND":
+		
+		name=ID.value
+		scope=Symtable.get_scope(tree)
+		_type=tipo.children[0].value
+
+		if _type!="int":
+			self.onerr(
+				tree.line,
+				f"variável {repr(name)} definida como {repr(_type)} ela só pode ser de tipo 'int' ou 'vetor de int'"
+			)
+
+		if tree.children[2].type=="END_COMMAND": #regular variable
 			previous=self.symtable.add_variable(
-				name=ID.value,
-				_type=tipo.children[0].value,
-				scope=Symtable.get_scope(tree),
+				name=name,
+				_type=_type,
+				scope=scope,
 				line=tree.meta.line
 			)
-		else:
+		else: #vector
 			size=int(tree.children[3].value)
+			if size==0:
+				self.onerr(
+					tree.line,
+					f"vetor {repr(name)} não pode ser definido com tamanho 0"
+				)
 			previous=self.symtable.add_vector(
-				name=ID.value,
-				_type=tipo.children[0].value,
-				scope=Symtable.get_scope(tree),
+				name=name,
+				_type=_type,
+				scope=scope,
 				line=tree.meta.line,
 				size=size
 			)
@@ -39,6 +55,8 @@ class Visitor(lark.Visitor):
 				tree.meta.line,
 				Visitor.__var_already_declared(previous)
 			)
+			return
+		tree.entry=self.symtable.get(scope,name)
 
 	def declaracao_retorno(self,tree):
 		NotImplemented #TODO check if this expression type matches parent type
