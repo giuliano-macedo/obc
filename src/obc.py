@@ -28,6 +28,7 @@ class Hooks:
 parser=argparse.ArgumentParser()
 parser.add_argument("input",type=argparse.FileType('r'))
 parser.add_argument("-P","--pass-through",action="store_true",help="don't stop if some process returns error")
+parser.add_argument("-N","--no-output",action="store_true",help="no output in every process")
 
 parser.add_argument("--lex-no-output",action="store_true",help="no lex process output ('tokens.pdf','tokens.dot')")
 parser.add_argument("--lex-show",action="store_true",help="no lex process tokens.pdf show")
@@ -42,6 +43,11 @@ parser.add_argument("--sem-no-output",action="store_true",help="no sem process o
 parser.add_argument("--sem-show",action="store_true",help="no sem process semantic_tree.pdf show")
 
 args=parser.parse_args()
+
+if args.no_output:
+	args.lex_no_output=True
+	args.syn_no_output=True
+	args.sem_no_output=True
 
 hooks=Hooks()
 hooks.add_entry("lex","ANALISADOR LÉXICO",lex)
