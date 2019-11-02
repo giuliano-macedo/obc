@@ -68,18 +68,36 @@ class Visitor(lark.Visitor):
 			if parent_function.data=="declaracao_funcoes":
 				break
 			parent_function=parent_function.parent
-		if parent_function==None:
+		if parent_function==None: #safe switch
 			self.onerr(
 				tree.line,
 				f"declaração de retorno em nenhuma função"
 			)
-		# 	return
-		# if not(is_return_void and parent_function.entry.type=="void"):
-		# 	self.onerr(
-		# 		tree.line,
-		# 		f"retorno de tipo {repr("int" if not is_return_void else "void")} numa função de tipo {repr(parent_function.entry.type)}"
-		# 	)
-		# 	return
+			return
+		parent_function_var=parent_function.entry
+		if is_return_void:
+			if parent_function_var.type!="void":
+				self.onerr(
+					tree.line,
+					f"retorno void numa função {repr(parent_function_var.type)}"
+				)
+			else:
+				#ok, void return and function is void as well
+				pass
+			return
+		#return is non void
+		if parent_function_var.type=="void":
+			self.onerr(
+				tree.line,
+				"retorno 'não void' numa função 'void'"
+			)
+			return
+		#return is non void and function is int
+		expression=tree.children[1].expression
+		if isinstance(expression,int): #expression is int constant
+			return
+		#it's fine as well, screwed up expressions are fixed later
+
 
 
 	def declaracao_funcoes(self,tree):
