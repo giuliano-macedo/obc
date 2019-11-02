@@ -39,7 +39,7 @@ class VectorEntry(VariableEntry):
 	def is_vector(self):
 		return True
 	def __repr__(self):
-		return super().__repr__().replace("Entry","VectorEntry")
+		return super().__repr__().replace("VariableEntry","VectorEntry")
 class FunctionEntry(BaseEntry):
 	def __init__(self,*args,arguments,**kwargs):
 		super().__init__(*args,**kwargs)

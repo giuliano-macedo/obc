@@ -34,7 +34,6 @@ class Symtable:
 			_type=_type,
 			scope=scope,
 			line=line,
-			arguments=args,
 			size=size
 		)
 	def __getitem__(self,k):

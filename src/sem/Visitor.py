@@ -21,14 +21,22 @@ class Visitor(lark.Visitor):
 				scope=Symtable.get_scope(tree),
 				line=tree.meta.line
 			)
-			if previous:
-				self.onerr(
-					tree.meta.line,
-					Visitor.__var_already_declared(previous)
-				)
-				self.ok=False
 		else:
-			NotImplemented # vector declaration
+			size=int(tree.children[3].value)
+			previous=self.symtable.add_vector(
+				name=ID.value,
+				_type=tipo.children[0].value,
+				scope=Symtable.get_scope(tree),
+				line=tree.meta.line,
+				size=size
+			)
+		if previous:
+			self.onerr(
+				tree.meta.line,
+				Visitor.__var_already_declared(previous)
+			)
+			self.ok=False
+
 	def declaracao_retorno(self,tree):
 		NotImplemented #TODO check if this expression type matches parent type
 		scope=Symtable.get_scope(tree)
@@ -37,12 +45,14 @@ class Visitor(lark.Visitor):
 		ID=tree.children[1]
 		parametros=tree.children[3]
 		args=[]
+		func_scope=Symtable.get_scope(tree.parent)
+		func_name=ID.value
 		#-------------------------------------------------------------
 		#add function to symtable
 		previous=self.symtable.add_function(
-			name=ID.value,
+			name=func_name,
 			_type=tipo.children[0].value,
-			scope=Symtable.get_scope(tree.parent),
+			scope=func_scope,
 			line=tree.meta.line,
 			args=args
 		)
@@ -52,6 +62,9 @@ class Visitor(lark.Visitor):
 				Visitor.__var_already_declared(previous)
 			)
 			self.ok=False
+		func=self.symtable.get(func_scope,func_name)
+		if func.name=="main":
+			func.referenced=True
 		#-------------------------------------------------------------
 		#get params and add them to symtable
 
@@ -59,9 +72,9 @@ class Visitor(lark.Visitor):
 			param_tipo=param.children[0]
 			param_ID=param.children[1]
 			
+			param_name=param_ID.value
+			param_scope=Symtable.get_scope(param)
 			if len(param.children)==2:
-				param_name=param_ID.value
-				param_scope=Symtable.get_scope(param)
 				previous=self.symtable.add_variable(
 					name=param_name,
 					_type=param_tipo.children[0].value,
@@ -69,7 +82,13 @@ class Visitor(lark.Visitor):
 					line=param.meta.line
 				)
 			else:
-				raise NotImplemented # vector declaration
+				previous=self.symtable.add_vector(
+					name=param_name,
+					_type=param_tipo.children[0].value,
+					scope=param_scope,
+					line=param.meta.line,
+					size=None
+				)
 
 			if previous:
 				self.onerr(
@@ -84,9 +103,11 @@ class Visitor(lark.Visitor):
 		return f"{f_or_var} {repr(previous.name)} ja foi declarada como {repr(previous.type)} na linha {previous.line}"
 	def variavel(self,tree):
 		ID=tree.children[0]
-		if not self.symtable.get(tree,ID.value):
+		var=self.symtable.get(tree,ID.value)
+		if not var:
 			self.onerr(
 				tree.line,
 				f"variável {repr(ID.value)} não declarada"
 			)
 			self.ok=False
+		var.referenced=True
