@@ -1,13 +1,16 @@
 from .Symtable import Symtable
 from .Visitor import Visitor
+from .Expression import install_expression
 from functools import partial
 from utils import log_err,log_war
 import lark
-def shape_tree(subtree,parent=None):
+def shape_tree(subtree,parent=None): 
+	"""
+	adds parent attribute to tree nodes
+	"""
 	if not isinstance(subtree,lark.Tree):
 		return
 	subtree.parent=parent
-	subtree.extra={}
 	for children in subtree.children:
 		shape_tree(children,subtree)
 def onerr(code_splitted,line,msg):
@@ -21,6 +24,7 @@ def onwarn(code_splitted,line,msg):
 def sem(code_splitted,fname,tree,complete_tree,no_output,show):
 	b=True
 	shape_tree(tree)
+	install_expression(tree)
 	symtable=Symtable()
 	visitor=Visitor(symtable,onerr=partial(onerr,code_splitted),onwarn=partial(onwarn,code_splitted))
 	visitor.visit_top_down(tree)
