@@ -113,10 +113,12 @@ class Visitor(lark.Visitor):
 			)
 			return
 		var.referenced=True
-		exp_value=tree.expression.children[0]
-		if var.is_vector and isinstance(exp_value,int):
-			if exp_value<0:
+		if not var.is_vector():
+			return
+		exp=tree.expression.children[0]
+		if isinstance(exp,int):
+			if exp<0:
 				self.onerr(
 					tree.line,
-					f"acesso negativo {repr(str(exp_value))} ao vetor {repr(ID.value)}"
+					f"acesso negativo {repr(str(exp))} ao vetor {repr(ID.value)}"
 				)
