@@ -2,6 +2,9 @@
 import argparse
 import os
 from collections import namedtuple
+import traceback
+import sys
+
 from lex import lex
 from syn import syn
 from sem import sem
@@ -54,9 +57,17 @@ for k,v in vars(args).items():
 	kwarg_key="_".join(k_splitted[1:])
 	hooks.add_kwarg_to(k_splitted[0],kwarg_key,v)
 ans=[args.input]
-for name,func in hooks.items():
+for i,(name,func) in enumerate(hooks.items(),1):
 	print("-"*16,name,"-"*16)
 	
-	b,*ans=func(*ans)
+	try:
+		b,*ans=func(*ans)
+	except Exception:
+		exc_info = sys.exc_info()
+		print("\x1b[1merro no compilador\x1b[0m")
+		print("traceback:")
+		traceback.print_exception(*exc_info)
+		exit(i+80)
 	if not b and not args.pass_through:
-		break
+		exit(i)
+exit(0)
