@@ -59,8 +59,29 @@ class Visitor(lark.Visitor):
 		tree.entry=self.symtable.get(scope,name)
 
 	def declaracao_retorno(self,tree):
-		NotImplemented #TODO check if this expression type matches parent type
+		
 		scope=Symtable.get_scope(tree)
+		is_return_void=(len(tree.children)==2)
+
+		parent_function=tree
+		while parent_function:
+			if parent_function.data=="declaracao_funcoes":
+				break
+			parent_function=parent_function.parent
+		if parent_function==None:
+			self.onerr(
+				tree.line,
+				f"declaração de retorno em nenhuma função"
+			)
+		# 	return
+		# if not(is_return_void and parent_function.entry.type=="void"):
+		# 	self.onerr(
+		# 		tree.line,
+		# 		f"retorno de tipo {repr("int" if not is_return_void else "void")} numa função de tipo {repr(parent_function.entry.type)}"
+		# 	)
+		# 	return
+
+
 	def declaracao_funcoes(self,tree):
 		tipo=tree.children[0]
 		ID=tree.children[1]
@@ -83,9 +104,9 @@ class Visitor(lark.Visitor):
 				Visitor.__var_already_declared(previous)
 			)
 			return
-		func=self.symtable.get(func_scope,func_name)
-		if func.name=="main":
-			func.referenced=True
+		tree.entry=self.symtable.get(func_scope,func_name)
+		if tree.entry.name=="main":
+			tree.entry.referenced=True
 		#-------------------------------------------------------------
 		#get params and add them to symtable
 
@@ -116,7 +137,10 @@ class Visitor(lark.Visitor):
 					param.meta.line,
 					Visitor.__var_already_declared(previous)
 				)
-			args.append(self.symtable.get(param_scope,param_name))
+			arg_var=self.symtable.get(param_scope,param_name)
+			arg_var.referenced=True;
+			arg_var.initialized=True;
+			args.append(arg_var)
 		
 	def __var_already_declared(previous):
 		f_or_var='variável' if previous.is_var() else 'função'
@@ -131,6 +155,7 @@ class Visitor(lark.Visitor):
 			)
 			return
 		var.referenced=True
+		tree.entry=var
 		if not var.is_vector() and tree.expression.data=="vetor":
 			self.onerr(
 				tree.line,
@@ -158,6 +183,7 @@ class Visitor(lark.Visitor):
 				f"função {repr(ID.value)} não declarada"
 			)
 			return
+		tree.entry=var
 		var.referenced=True
 
 		are_args_vars=[not arg.is_vector() for arg in var.args]
@@ -174,8 +200,8 @@ class Visitor(lark.Visitor):
 				are_exps_vars.append(True)
 		
 		if not (len(var.args)==len(exp.children) and all(x==y for x,y in zip(are_args_vars,are_exps_vars))):
-			called_with=",".join("int" if b else "int[]" for b in are_exps_vars)
-			expected=",".join("int" if b else "int[]" for b in are_args_vars)
+			called_with=",".join(repr("int" if b else "vetor de int") for b in are_exps_vars)
+			expected=",".join(repr("int" if b else "vetor de int") for b in are_args_vars)
 
 			self.onerr(
 				tree.line,
