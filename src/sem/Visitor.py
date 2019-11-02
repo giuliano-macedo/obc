@@ -24,10 +24,11 @@ class Visitor(lark.Visitor):
 		_type=tipo.children[0].value
 
 		if _type!="int":
-			self.onerr(
+			self.onwarn(
 				tree.line,
-				f"variável {repr(name)} definida como {repr(_type)} ela só pode ser de tipo 'int' ou 'vetor de int'"
+				f"tipo variável {repr(name)} assumida como 'int' pois ela não pode ser {repr(_type)}"
 			)
+			_type="int"
 
 		if tree.children[2].type=="END_COMMAND": #regular variable
 			previous=self.symtable.add_variable(
@@ -134,17 +135,24 @@ class Visitor(lark.Visitor):
 			
 			param_name=param_ID.value
 			param_scope=Symtable.get_scope(param)
+			_type=param_tipo.children[0].value
+			if _type!="int":
+				self.onwarn(
+					tree.line,
+					f"tipo variável {repr(param_name)} assumida como 'int' pois ela não pode ser {repr(_type)}"
+				)
+				_type="int"
 			if len(param.children)==2:
 				previous=self.symtable.add_variable(
 					name=param_name,
-					_type=param_tipo.children[0].value,
+					_type=_type,
 					scope=param_scope,
 					line=param.meta.line
 				)
 			else:
 				previous=self.symtable.add_vector(
 					name=param_name,
-					_type=param_tipo.children[0].value,
+					_type=_type,
 					scope=param_scope,
 					line=param.meta.line,
 					size=None
