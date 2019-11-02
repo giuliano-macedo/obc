@@ -113,7 +113,13 @@ class Visitor(lark.Visitor):
 			)
 			return
 		var.referenced=True
-		if not var.is_vector():
+		if not var.is_vector() and tree.expression.data=="vetor":
+			self.onerr(
+				tree.line,
+				f"{repr(ID.value)} foi definida como varíavel na linha {var.line}, não vetor, impossível indexar"
+			)
+			return
+		if tree.expression.data!="vetor":
 			return
 		exp=tree.expression.children[0]
 		if isinstance(exp,int):
@@ -122,3 +128,39 @@ class Visitor(lark.Visitor):
 					tree.line,
 					f"acesso negativo {repr(str(exp))} ao vetor {repr(ID.value)}"
 				)
+	def ativacao(self,tree):
+		ID=tree.children[0]
+		argumentos=tree.children[2]
+		exp=tree.expression
+
+		var=self.symtable.get(tree,ID.value)
+		if not var:
+			self.onerr(
+				tree.line,
+				f"função {repr(ID.value)} não declarada"
+			)
+			return
+		var.referenced=True
+
+		are_args_vars=[not arg.is_vector() for arg in var.args]
+		are_exps_vars=[]
+		for e in exp.children:
+			if isinstance(e,int): #if constant, True
+				are_exps_vars.append(True)
+			elif len(e.children)==0: #if is a single variable, and symtable returns vector, then it is false
+				this_var=self.symtable.get(tree,e.var_name)
+				if not this_var:
+					return
+				are_exps_vars.append(not this_var.is_vector())
+			else: #there is complex expression, false expressions are ignored so this should as well
+				are_exps_vars.append(True)
+		
+		if not (len(var.args)==len(exp.children) and all(x==y for x,y in zip(are_args_vars,are_exps_vars))):
+			called_with=",".join("int" if b else "int[]" for b in are_exps_vars)
+			expected=",".join("int" if b else "int[]" for b in are_args_vars)
+
+			self.onerr(
+				tree.line,
+				f"função {repr(var.name)} definida na linha {var.line} foi chamada com variáveis {called_with} era esperado {expected}"
+			)
+

@@ -109,7 +109,10 @@ class Expression():#custom trasnformer
 		| ID S_OPEN expressao S_CLOSE
 		"""
 		if len(args)==1:
-			return ExpressionTree("variavel")
+			#TODO fix this hack
+			ans=ExpressionTree("variavel")
+			ans.var_name=args[0].value
+			return ans
 		return ExpressionTree("vetor",[args[2]])
 	def ativacao(self,args):
 		"""
