@@ -5,7 +5,7 @@ import os
 def run(fname_path):
 	return_code=0
 	try:
-		out=check_output(["python3","obc.py",fname_path])
+		out=check_output(["python3","obc.py","-N",fname_path])
 	except CalledProcessError as e:
 		return_code=e.returncode
 		out=e.output
