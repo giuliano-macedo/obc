@@ -40,8 +40,11 @@ class Symtable:
 		return self.table[k]
 	def get(self,scope,k):
 		if isinstance(scope,lark.Tree):
-			return self.table.get((Symtable.get_scope(scope)+"."+k))
-		return self.table.get((scope+"."+k))
+			scope=Symtable.get_scope(scope)
+		local=self.table.get((scope+"."+k))
+		if local==None:
+			return self.table.get("."+k) #try to return global
+		return local
 	def get_scope(tree):
 		important=[]
 		

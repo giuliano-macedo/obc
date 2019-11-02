@@ -1,12 +1,16 @@
 import lark
 from .Symtable import Symtable
 class Visitor(lark.Visitor):
+	
 	def __init__(self,symtable,onerr,onwarn,*args,**kwargs):
 		super().__init__(*args,**kwargs)
 		self.symtable=symtable
-		self.onerr=onerr
+		self.__onerr=onerr
 		self.onwarn=onwarn
 		self.ok=True
+	def onerr(self,line,msg):
+		self.__onerr(line,msg)
+		self.ok=False
 	def visit_top_down(self,tree):
 		for subtree in tree.iter_subtrees_topdown():
 			self._call_userfunc(subtree)
@@ -35,7 +39,6 @@ class Visitor(lark.Visitor):
 				tree.meta.line,
 				Visitor.__var_already_declared(previous)
 			)
-			self.ok=False
 
 	def declaracao_retorno(self,tree):
 		NotImplemented #TODO check if this expression type matches parent type
@@ -61,7 +64,7 @@ class Visitor(lark.Visitor):
 				tree.meta.line,
 				Visitor.__var_already_declared(previous)
 			)
-			self.ok=False
+			return
 		func=self.symtable.get(func_scope,func_name)
 		if func.name=="main":
 			func.referenced=True
@@ -95,7 +98,6 @@ class Visitor(lark.Visitor):
 					param.meta.line,
 					Visitor.__var_already_declared(previous)
 				)
-				self.ok=False
 			args.append(self.symtable.get(param_scope,param_name))
 		
 	def __var_already_declared(previous):
@@ -109,5 +111,12 @@ class Visitor(lark.Visitor):
 				tree.line,
 				f"variável {repr(ID.value)} não declarada"
 			)
-			self.ok=False
+			return
 		var.referenced=True
+		exp_value=tree.expression.children[0]
+		if var.is_vector and isinstance(exp_value,int):
+			if exp_value<0:
+				self.onerr(
+					tree.line,
+					f"acesso negativo {repr(str(exp_value))} ao vetor {repr(ID.value)}"
+				)

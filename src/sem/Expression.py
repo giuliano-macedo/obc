@@ -10,7 +10,7 @@ class ExpressionInt(int):
 		return int.__new__(cls,int(*args,**kwargs))
 
 
-class Expression(lark.Transformer):
+class Expression():#custom trasnformer
 	op_relacional_table={
 		">" :lambda x,y:ExpressionInt(x> y),
 		">=":lambda x,y:ExpressionInt(x>=y),
@@ -27,6 +27,16 @@ class Expression(lark.Transformer):
 		"*":lambda x,y:x* y,
 		"/":lambda x,y:x//y
 	}
+	def install(self,tree):
+		if not isinstance(tree,lark.Tree):
+			return tree
+		args=[self.install(children) for children in tree.children]
+		f=getattr(self,tree.data)
+		if f==None:
+			raise RuntimeError(f"Unexpected error {tree.data} not defined")
+		ans=f(args)
+		tree.expression=ans
+		return ans
 	def expressao(self,args):
 		"""
 		expressao: variavel ATTR expressao 
@@ -93,15 +103,6 @@ class Expression(lark.Transformer):
 		if isinstance(args[0],lark.Tree):
 			return args[0]
 		return ExpressionInt(args[0])
-	def ativacao(self,args):
-		"""
-		ativacao: ID P_OPEN argumentos P_CLOSE
-		"""
-		return ExpressionTree("ativacao",args[2])
-	def argumentos(self,args):
-		"""
-		ativacao: ID P_OPEN argumentos P_CLOSE
-		"""
 	def variavel(self,args):
 		"""
 		variavel: ID 
@@ -110,6 +111,11 @@ class Expression(lark.Transformer):
 		if len(args)==1:
 			return ExpressionTree("variavel")
 		return ExpressionTree("vetor",[args[2]])
+	def ativacao(self,args):
+		"""
+		ativacao: ID P_OPEN argumentos P_CLOSE
+		"""
+		return ExpressionTree("ativacao",args[2])
 	def argumentos(self,args):
 		"""
 		argumentos: lista_argumentos 
@@ -141,5 +147,4 @@ def install_expression(tree):
 	for subtree in tree.iter_subtrees():
 		if not (subtree.data=="expressao" and is_head(subtree)):
 			continue
-		subtree.expression=Expression().transform(subtree)
-		print(subtree.expression)
+		Expression().install(subtree)
