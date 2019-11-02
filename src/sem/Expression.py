@@ -1,8 +1,13 @@
 import lark
 class ExpressionTree(lark.Tree):
-	def __init__(self,name,children=[]):
-		super().__init__(name,children)
+	def __init__(self,data,children=[]):
+		super().__init__(data,children)
 		self.does_variate=True
+class ExpressionVariable(ExpressionTree):
+	def __init__(self,data,var_name,children=[]):
+		super().__init__(data,children)
+		self.var_name=var_name
+class ExpressionVector(ExpressionVariable):pass
 class ExpressionInt(int):
 	def __init__(self,*args,**kwargs):
 		self.does_variate=False
@@ -109,11 +114,8 @@ class Expression():#custom trasnformer
 		| ID S_OPEN expressao S_CLOSE
 		"""
 		if len(args)==1:
-			#TODO fix this hack
-			ans=ExpressionTree("variavel")
-			ans.var_name=args[0].value
-			return ans
-		return ExpressionTree("vetor",[args[2]])
+			return ExpressionVariable("variavel",args[0].value)
+		return ExpressionVector("vetor",args[0].value,[args[2]])
 	def ativacao(self,args):
 		"""
 		ativacao: ID P_OPEN argumentos P_CLOSE
