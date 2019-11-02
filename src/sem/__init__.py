@@ -45,10 +45,9 @@ def sem(code_splitted,fname,tree,complete_tree,no_output,show):
 			str1="" if is_main else " não"
 			str2="" if is_void else " não"
 			str3="" if does_have_args else " não"
-			b==False
+			b=False
 			log_err(f"a última função declarada{str1} tem o nome main,{str2} é de tipo void e{str3} tem argumentos")
 		
 	print("-"*16,"SYMTABLE","-"*16)
 	print(*(f"{k}->{repr(v)}" for k,v in symtable.table.items()),sep="\n")
-	exit()
-	# return b,ans,symtable
+	return b,tree,symtable
