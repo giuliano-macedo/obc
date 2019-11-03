@@ -76,6 +76,7 @@ class Visitor(lark.Visitor):
 			)
 			return
 		parent_function_var=parent_function.entry
+		parent_function_var.does_return=True
 		if is_return_void:
 			if parent_function_var.type!="void":
 				self.onerr(
