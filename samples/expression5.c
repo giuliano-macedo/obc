@@ -3,5 +3,6 @@ int f(int a,int b,int c){
 }
 void main(void){
 	int x;
+	x=1;
 	f(x+1,x,3);
 }

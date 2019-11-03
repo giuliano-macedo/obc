@@ -4,6 +4,7 @@ int f(int a[],int b,int c){
 }
 void main(void){
 	int x[1];
+	test[0]=1;
 	x[0]=1;
 	f(x,2/3,3);
 }
