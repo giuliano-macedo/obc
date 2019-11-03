@@ -181,6 +181,12 @@ class Visitor(lark.Visitor):
 				f"variável {repr(ID.value)} não declarada"
 			)
 			return
+		if var.is_function():
+			self.onerr(
+				tree.line,
+				f"função {repr(var.name)} definida na linha {var.line} sendo referenciada como variável"
+			)
+			return
 		var.referenced=True
 		tree.entry=var
 		if not var.is_vector() and tree.expression.data=="vetor":
