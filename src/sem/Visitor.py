@@ -64,11 +64,7 @@ class Visitor(lark.Visitor):
 		scope=Symtable.get_scope(tree)
 		is_return_void=(len(tree.children)==2)
 
-		parent_function=tree
-		while parent_function:
-			if parent_function.data=="declaracao_funcoes":
-				break
-			parent_function=parent_function.parent
+		parent_function=go_up_and_find(tree,"declaracao_funcoes")
 		if parent_function==None: #safe switch
 			self.onerr(
 				tree.line,
@@ -195,12 +191,32 @@ class Visitor(lark.Visitor):
 				f"{repr(var.name)} foi definida como varíavel simples na linha {var.line}, não vetor, impossível indexar"
 			)
 			return
-		elif var.is_vector() and tree.expression.data!="vetor":
-			self.onerr(
-				tree.line,
-				f"{repr(var.name)} foi definida como vetor na linha {var.line}, não variável simples, esta precisa estar indexada"
-			)
-			return			
+		elif var.is_vector() and tree.expression.data!="vetor" and go_up_and_find(tree,"ativacao")==None:
+			declaracao_expressao=go_up_and_find(tree,"declaracao_expressao")
+			exp=declaracao_expressao.children[0].expression
+			err=False
+			#make sure it is expresion of type vector = vector
+			if isinstance(exp,lark.Tree) and exp.data=="=":
+				l,r=exp.children
+				if l.data=="variavel" and r.data=="variavel":
+					l_var=self.symtable.get(tree,l.var_name)
+					r_var=self.symtable.get(tree,l.var_name)
+					if l_var!=None and r_var!=None:
+						if not (l_var.is_vector() and r_var.is_vector()):
+							err=True
+					else:
+						err=True
+				else:
+					err=True
+			else:
+				err=True
+
+			if err:
+				self.onerr(
+					tree.line,
+					f"operação inválida para o vetor {repr(var.name)} definido na linha:{var.line}"
+				)
+				return			
 		if tree.expression.data!="vetor":
 			return
 		exp=tree.expression.children[0]
@@ -255,7 +271,7 @@ class Visitor(lark.Visitor):
 
 			self.onerr(
 				tree.line,
-				f"função {repr(var.name)} definida na linha {var.line} foi chamada com variáveis {called_with} era esperado {expected}"
+				f"função {repr(var.name)} definida na linha {var.line} foi chamada com variáveis {called_with if called_with else 'nenhuma variavel'} era esperado {expected if expected else 'nenhuma variavel'}"
 			)
 def iterate_parents(tree):
 	while True:
