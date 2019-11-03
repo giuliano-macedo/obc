@@ -224,7 +224,18 @@ class Visitor(lark.Visitor):
 			return
 		tree.entry=var
 		var.referenced=True
+		if var.type=="void":
+			#it's only valid if its parent follows this pattern, expressao.parent.data==declaracao_expressao
+			declaracao_expressao=go_up_and_find(tree,"declaracao_expressao")
+			if declaracao_expressao.children[0].expression.data!="ativacao":
+				self.onerr(
+					tree.line,
+					f"função void {repr(var.name)} declarada na linha: {var.line} está sendo chamada dentro de uma expressão"
+				)
+				return
 
+		#----------------------------------------------------
+		#args match
 		are_args_vars=[not arg.is_vector() for arg in var.args]
 		are_exps_vars=[]
 		for e in exp.children:
