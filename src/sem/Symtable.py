@@ -71,12 +71,22 @@ class Symtable:
 		ans.node("ks",label="|".join(f"<k{i}> {k}" for i,k in enumerate(self.table.keys())))
 		vs=[]
 		for i,values in enumerate(self.table.values()):
-			vs.append(
-				f"{{<v{i}> "+	 
-				"%s}"%"|".join(f"{k}={v}" for k,v in vars(values).items() if not isinstance(v,list))
-			)
+			row="|".join(f"{k}={myrepr(v)}" for k,v in vars(values).items() if not isinstance(v,list))
+			if values.is_function():
+				row="Function|"+row
+			elif not values.is_vector():
+				row="Variable|"+row
+			else:
+				row="Vector|"+row
+			vs.append(f"{{<v{i}> {row}}}")
 		ans.node("vs",label="|".join(vs))
 		
 		for i in range(len(self.table)):
 			ans.edge(f"ks:k{i}",f"vs:v{i}")
 		return ans
+def myrepr(v):
+	if isinstance(v,str):
+		if v=="":
+			return "ε"
+		return '"'+v+'"'
+	return repr(v)
