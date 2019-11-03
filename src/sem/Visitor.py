@@ -192,9 +192,15 @@ class Visitor(lark.Visitor):
 		if not var.is_vector() and tree.expression.data=="vetor":
 			self.onerr(
 				tree.line,
-				f"{repr(ID.value)} foi definida como varíavel na linha {var.line}, não vetor, impossível indexar"
+				f"{repr(var.name)} foi definida como varíavel simples na linha {var.line}, não vetor, impossível indexar"
 			)
 			return
+		elif var.is_vector() and tree.expression.data!="vetor":
+			self.onerr(
+				tree.line,
+				f"{repr(var.name)} foi definida como vetor na linha {var.line}, não variável simples, esta precisa estar indexada"
+			)
+			return			
 		if tree.expression.data!="vetor":
 			return
 		exp=tree.expression.children[0]
