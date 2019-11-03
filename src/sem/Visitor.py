@@ -257,4 +257,11 @@ class Visitor(lark.Visitor):
 				tree.line,
 				f"função {repr(var.name)} definida na linha {var.line} foi chamada com variáveis {called_with} era esperado {expected}"
 			)
-
+def iterate_parents(tree):
+	while True:
+		tree=tree.parent
+		if not tree:
+			break
+		yield tree
+def go_up_and_find(tree,rule):
+	return next((ans for ans in iterate_parents(tree) if ans.data==rule),None)
