@@ -45,6 +45,8 @@ class FunctionEntry(BaseEntry):
 		super().__init__(*args,**kwargs)
 		self.args=arguments
 		self.does_return=False
+		self.no_ifs=0
+		self.no_whiles=0
 	def is_function(self):
 		return True
 	def is_var(self):

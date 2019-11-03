@@ -279,7 +279,16 @@ class Visitor(lark.Visitor):
 			l_var=self.symtable.get(tree,exp.children[0].var_name)
 			if l_var!=None:
 				l_var.initialized=True
-
+	def declaracao_selecao(self,tree):
+		parent_function=go_up_and_find(tree,"declaracao_funcoes").entry
+		scope=Symtable.get_scope(tree)
+		tree.label=f"{scope}.if{parent_function.no_ifs}"
+		parent_function.no_ifs+=1
+	def declaracao_iteracao(self,tree):
+		parent_function=go_up_and_find(tree,"declaracao_funcoes").entry
+		scope=Symtable.get_scope(tree)
+		tree.label=f"{scope}.while{parent_function.no_whiles}"
+		parent_function.no_whiles+=1
 def iterate_parents(tree):
 	while True:
 		tree=tree.parent
