@@ -5,6 +5,8 @@ from lark.exceptions import UnexpectedToken
 from lark.grammar import Terminal
 from graphviz import Digraph
 from utils import log_err,log_war
+import pickle
+import os
 
 TOKENS_NAMES=[t[0] for t in TOKENS_DEFINITION]
 
@@ -97,7 +99,11 @@ def syn(fname,tokens,complete_tree,dont_try_to_fix_errs,no_output,show):
 			modified_tokens.pop(index_added)
 		return sucess,tokens
 
+	# if not os.path.isfile("parser.p"):
 	lark = Lark(grammar,parser='lalr',lexer=Lex,start="programa",propagate_positions=True)
+		# pickle.dump(lark,open("parser.p","wb"))
+	# else:
+		# lark=pickle.load(open("parser.p","rb"))
 	if len(tokens)==0:
 		log_err("programa vazio")
 		exit(-1)
