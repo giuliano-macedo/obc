@@ -1,6 +1,7 @@
 int f(void){
-	return;
+	return 1;
 }
 void main(void){
-	f();
+	int x;
+	x=1+f;
 }
