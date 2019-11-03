@@ -273,6 +273,13 @@ class Visitor(lark.Visitor):
 				tree.line,
 				f"função {repr(var.name)} definida na linha {var.line} foi chamada com variáveis {called_with if called_with else 'nenhuma variavel'} era esperado {expected if expected else 'nenhuma variavel'}"
 			)
+	def expressao(self,tree):
+		exp=tree.expression
+		if isinstance(exp,lark.Tree) and exp.data=="=":
+			l_var=self.symtable.get(tree,exp.children[0].var_name)
+			if l_var!=None:
+				l_var.initialized=True
+
 def iterate_parents(tree):
 	while True:
 		tree=tree.parent
