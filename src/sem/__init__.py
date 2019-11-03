@@ -47,7 +47,29 @@ def sem(code_splitted,fname,tree,complete_tree,no_output,show):
 			str3="" if does_have_args else " não"
 			b=False
 			log_err(f"a última função declarada{str1} tem o nome main,{str2} é de tipo void e{str3} tem argumentos")
+	get_msg=lambda entry:f"{'função' if entry.is_function() else 'variável'} {repr(entry.name)}"
+	for entry in symtable.table.values():
 		
+		if not entry.referenced:
+			onwarn(
+				code_splitted,
+				entry.line,
+				get_msg(entry)+" definida porém nunca utilizada"
+			)
+		elif entry.is_var() and not entry.initialized:
+			onwarn(
+				code_splitted,
+				entry.line,
+				get_msg(entry)+" não foi inicializada"
+			)
+		if entry.is_function() and entry.type!="void" and not entry.does_return:
+			onerr(
+				code_splitted,
+				entry.line,
+				get_msg(entry)+" não retorna valor !"
+			)
+			b=False
+
 	if not no_output:
 		symtable_graph=symtable.to_graphviz()
 		#TODO GENERATE ANOTADED TREE
