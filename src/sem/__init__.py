@@ -1,9 +1,62 @@
+def myrepr(v):
+	if isinstance(v,str):
+		if v=="":
+			return "ε"
+		return '"'+v+'"'
+	if isinstance(v,list):
+		return str(["int[]" if a.is_vector() else "int" for a in v])
+	return repr(v)
 from .Symtable import Symtable
 from .Visitor import Visitor
 from .Expression import install_expression
 from functools import partial
 from utils import log_err,log_war
+import graphviz
 import lark
+def build_dot_expression(exp_tree,dot):
+	h=str(id(exp_tree))
+	if isinstance(exp_tree,int) or isinstance(exp_tree,str):
+		dot.node(h,label=str(exp_tree),shape="box")
+		return
+	elif isinstance(exp_tree,list):
+		dot.node(h,label="list",shape="box")
+		for element in exp_tree:
+			build_dot_expression(element,dot)
+		return
+	label=str(exp_tree.data)
+	if getattr(exp_tree,"var_name",None)!=None:
+		label+="\nvar_name="+repr(exp_tree.var_name)
+	dot.node(h,label=label,shape="box")
+	for i,children in enumerate(exp_tree.children):
+		r=str(id(children))
+		dot.edge(h,r,label=["left","right"][i])
+		build_dot_expression(children,dot)
+def build_dot(tree,dot,complete=False):
+	istoken=lambda obj:isinstance(obj,lark.Token)
+	if complete:
+		getData=lambda obj:rf"\<{obj.type},{obj.value}\>" if istoken(obj) else obj.data
+	else :
+		getData=lambda obj:obj if istoken(obj) else obj.data
+	h=str(id(tree))
+	if istoken(tree):
+		dot.node(h,label=getData(tree))
+		return 
+
+	label=tree.data
+	if tree.data in {"declaracao_selecao","declaracao_iteracao"}:
+		label+="\n"+f"label={repr(tree.label)}"
+	elif tree.data in {"declaracao_variaveis","declaracao_funcoes"}:
+		label+="\n"+"\n".join(f"{k}={myrepr(v)}" for k,v in vars(tree.entry).items())
+	dot.node(h,label=label)
+	if tree.data in {"expressao","expressao_simples","soma_expressao","termo","soma","op_relacional","mult","fator","variavel","ativacao","argumentos","lista_argumentos","install_expression"}:
+		dot.edge(h,str(id(tree.expression)),label="expression",color="red")
+		build_dot_expression(tree.expression,dot)
+	for children in tree.children:
+		r=str(id(children))
+		dot.edge(h,r)
+		if not istoken(children):
+			dot.edge(r,h,color="red",label="parent")
+		build_dot(children,dot,complete)
 def shape_tree(subtree,parent=None): 
 	"""
 	adds parent attribute to tree nodes
@@ -72,7 +125,14 @@ def sem(code_splitted,fname,tree,complete_tree,no_output,show):
 
 	if not no_output:
 		symtable_graph=symtable.to_graphviz()
-		#TODO GENERATE ANOTADED TREE
 		symtable_graph.save("symtable.dot")
 		symtable_graph.render('symtable',format="pdf", cleanup=True,view=show,quiet_view=show)
+
+		dot = graphviz.Digraph(strict=True)
+		if complete_tree:
+			dot.attr(rankdir="LR")
+		build_dot(tree,dot,complete=complete_tree)
+		dot.save("semantic_tree.dot")
+		dot.render('semantic_tree',format="pdf", cleanup=True,view=show,quiet_view=show)
+
 	return b,tree,symtable

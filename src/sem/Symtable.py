@@ -2,6 +2,7 @@ from collections import deque
 import lark
 from .symtable_entries import VariableEntry,VectorEntry,FunctionEntry
 import graphviz
+from . import myrepr
 class Symtable:
 	def __init__(self):
 		self.table={}
@@ -71,7 +72,7 @@ class Symtable:
 		ans.node("ks",label="|".join(f"<k{i}> {k}" for i,k in enumerate(self.table.keys())))
 		vs=[]
 		for i,values in enumerate(self.table.values()):
-			row="|".join(f"{k}={myrepr(v)}" for k,v in vars(values).items() if not isinstance(v,list))
+			row="|".join(f"{k}={myrepr(v)}" for k,v in vars(values).items())
 			if values.is_function():
 				row="Function|"+row
 			elif not values.is_vector():
@@ -84,9 +85,3 @@ class Symtable:
 		for i in range(len(self.table)):
 			ans.edge(f"ks:k{i}",f"vs:v{i}")
 		return ans
-def myrepr(v):
-	if isinstance(v,str):
-		if v=="":
-			return "ε"
-		return '"'+v+'"'
-	return repr(v)
