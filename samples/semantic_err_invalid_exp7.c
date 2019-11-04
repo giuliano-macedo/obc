@@ -4,5 +4,5 @@ int f(void){
 void main(void){
 	int x;
 	x=1;
-	x=x+f();
+	x=x+f[1];
 }
