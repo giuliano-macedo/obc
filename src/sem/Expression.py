@@ -13,6 +13,10 @@ class ExpressionInt(int):
 		self.does_variate=False
 	def __new__(cls,*args,**kwargs):
 		return int.__new__(cls,int(*args,**kwargs))
+class ExpressionList(list):
+	def __init__(self,*args,**kwargs):
+		super().__init__(*args,**kwargs)
+		self.data="list"
 
 
 class Expression():#custom trasnformer
@@ -135,8 +139,9 @@ class Expression():#custom trasnformer
 		| expressao
 		"""
 		if len(args)==3:
-			return args[0]+[args[2]]
-		return [args[0]]
+			#TODO FIX THIS HACK
+			return ExpressionList(args[0]+[args[2]])
+		return ExpressionList([args[0]])
 	
 	
 def is_head(tree):

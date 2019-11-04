@@ -191,32 +191,43 @@ class Visitor(lark.Visitor):
 				f"{repr(var.name)} foi definida como varíavel simples na linha {var.line}, não vetor, impossível indexar"
 			)
 			return
-		elif var.is_vector() and tree.expression.data!="vetor" and go_up_and_find(tree,"ativacao")==None:
-			declaracao_expressao=go_up_and_find(tree,"declaracao_expressao")
-			exp=declaracao_expressao.children[0].expression
+		elif var.is_vector() and tree.expression.data!="vetor":
+			#vector without indexing
 			err=False
-			#make sure it is expresion of type vector = vector
-			if isinstance(exp,lark.Tree) and exp.data=="=":
-				l,r=exp.children
-				if l.data=="variavel" and r.data=="variavel":
-					l_var=self.symtable.get(tree,l.var_name)
-					r_var=self.symtable.get(tree,l.var_name)
-					if l_var!=None and r_var!=None:
-						if not (l_var.is_vector() and r_var.is_vector()):
+			for parent in iterate_parents(tree):
+				if getattr(parent,"expression",None)==None:
+					break
+				exp=parent.expression
+				if exp.data=="list":
+					#is being called in a argument
+					break
+				if exp.data not in {"variavel","="}:
+					msg=exp.data
+					err=True
+					break
+				#make sure it is expresion of type vector = vector
+				elif exp.data=="=":
+					l,r=exp.children
+					if l.data=="variavel" and r.data=="variavel":
+						l_var=self.symtable.get(tree,l.var_name)
+						r_var=self.symtable.get(tree,l.var_name)
+						if l_var!=None and r_var!=None:
+							if not (l_var.is_vector() and r_var.is_vector()):
+								err=True
+						else:
 							err=True
 					else:
 						err=True
-				else:
-					err=True
-			else:
-				err=True
+				if err:
+					msg="="
+					break
 
 			if err:
 				self.onerr(
 					tree.line,
-					f"operação inválida para o vetor {repr(var.name)} definido na linha:{var.line}"
+					f"operação {repr(msg)} inválida para o vetor {repr(var.name)} definido na linha:{var.line}"
 				)
-				return			
+				return		
 		if tree.expression.data!="vetor":
 			return
 		exp=tree.expression.children[0]
