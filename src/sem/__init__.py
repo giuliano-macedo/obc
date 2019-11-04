@@ -29,7 +29,7 @@ def build_dot_expression(exp_tree,dot):
 	dot.node(h,label=label,shape="box")
 	for i,children in enumerate(exp_tree.children):
 		r=str(id(children))
-		dot.edge(h,r,label=["left","right"][i])
+		dot.edge(h,r,label=["left","right"][i] if len(exp_tree.children)==2 else "")
 		build_dot_expression(children,dot)
 def build_dot(tree,dot,complete=False):
 	istoken=lambda obj:isinstance(obj,lark.Token)
