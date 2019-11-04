@@ -43,9 +43,9 @@ def build_dot(tree,dot,complete=False):
 		return 
 
 	label=tree.data
-	if tree.data in {"declaracao_selecao","declaracao_iteracao"}:
+	if tree.data in {"declaracao_selecao","declaracao_iteracao"} and getattr(tree,"label",None)!=None:
 		label+="\n"+f"label={repr(tree.label)}"
-	elif tree.data in {"declaracao_variaveis","declaracao_funcoes"}:
+	elif tree.data in {"declaracao_variaveis","declaracao_funcoes"} and getattr(tree,"entry",None)!=None:
 		label+="\n"+"\n".join(f"{k}={myrepr(v)}" for k,v in vars(tree.entry).items())
 	dot.node(h,label=label)
 	if tree.data in {"expressao","expressao_simples","soma_expressao","termo","soma","op_relacional","mult","fator","variavel","ativacao","argumentos","lista_argumentos","install_expression"}:
