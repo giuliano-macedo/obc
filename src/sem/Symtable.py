@@ -6,7 +6,41 @@ from . import myrepr
 class Symtable:
 	def __init__(self):
 		self.table={}
-	def add_variable(self,name,_type,scope,line):
+		#std 'prototypes'
+
+		#input
+		#------------------------------------------------------------------------
+		# int getchar(void)
+		self.add_function("getchar","int","",0,[],does_return=True,referenced=True)
+		# int getint(void)
+		self.add_function("getint","int","",0,[],does_return=True,referenced=True)
+		#output
+		#------------------------------------------------------------------------
+		# void putint(int n)
+		args=[]
+		self.add_function("putint","void","",0,args,does_return=True,referenced=True)
+		self.add_variable("n","int","putint",0,initialized=True,referenced=True)
+		args.append(self.get("putint","n"))
+
+		# void putstr(int str[]) ; must be null ended
+		args=[]
+		self.add_function("putstr","void","",0,args,does_return=True,referenced=True)
+		self.add_vector("str","int","putstr",0,None,initialized=True,referenced=True)
+		args.append(self.get("putstr","str"))
+
+		
+		# void putchar(int c);
+		args=[]
+		self.add_function("putchar","void","",0,args,does_return=True,referenced=True)
+		self.add_variable("c","int","putchar",0,initialized=True,referenced=True)
+		args.append(self.get("putchar","c"))
+
+		#'contants'
+		#------------------------------------------------------------
+		
+		self.add_variable("INTMAX","int","",0,initialized=True,referenced=True)# int INTMAX=4;
+
+	def add_variable(self,name,_type,scope,line,**kwargs):
 		var=self.table.get(scope+"."+name,None)
 		if var!=None:
 			return var
@@ -14,9 +48,10 @@ class Symtable:
 			name=name,
 			_type=_type,
 			scope=scope,
-			line=line
+			line=line,
+			**kwargs
 		)
-	def add_function(self,name,_type,scope,line,args):
+	def add_function(self,name,_type,scope,line,args,**kwargs):
 		var=self.table.get(scope+"."+name,None)
 		if var!=None:
 			return var
@@ -25,9 +60,10 @@ class Symtable:
 			_type=_type,
 			scope=scope,
 			line=line,
-			arguments=args
+			arguments=args,
+			**kwargs
 		)
-	def add_vector(self,name,_type,scope,line,size):
+	def add_vector(self,name,_type,scope,line,size,**kwargs):
 		var=self.table.get(scope+"."+name,None)
 		if var!=None:
 			return var
@@ -36,7 +72,8 @@ class Symtable:
 			_type=_type,
 			scope=scope,
 			line=line,
-			size=size
+			size=size,
+			**kwargs
 		)
 	def __getitem__(self,k):
 		return self.table[k]

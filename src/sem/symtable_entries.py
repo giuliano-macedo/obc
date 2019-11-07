@@ -1,10 +1,10 @@
 class BaseEntry:
-	def __init__(self,name,_type,scope,line):
+	def __init__(self,name,_type,scope,line,**kwargs):
 		self.name=name
 		self.type=_type
 		self.scope=scope
 		self.line=line
-		self.referenced=False
+		self.referenced=kwargs.get("referenced",False)
 	def is_function(self): #virtual
 		raise NotImplementedError()
 	def is_var(self): #virtual
@@ -19,7 +19,7 @@ class BaseEntry:
 class VariableEntry(BaseEntry):
 	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
-		self.initialized=False
+		self.initialized=kwargs.get("initialized",False)
 	def is_function(self):
 		return False
 	def is_var(self):
@@ -44,7 +44,7 @@ class FunctionEntry(BaseEntry):
 	def __init__(self,*args,arguments,**kwargs):
 		super().__init__(*args,**kwargs)
 		self.args=arguments
-		self.does_return=False
+		self.does_return=kwargs.get("does_return",False)
 		self.no_ifs=0
 		self.no_whiles=0
 	def is_function(self):
