@@ -38,7 +38,7 @@ class Symtable:
 		#'contants'
 		#------------------------------------------------------------
 		
-		self.add_variable("INTMAX","int","",0,initialized=True,referenced=True)# int INTMAX=4;
+		self.add_variable("SIZEOFINT","int","",0,initialized=True,referenced=True)# int SIZEOFINT=4;
 
 	def add_variable(self,name,_type,scope,line,**kwargs):
 		var=self.table.get(scope+"."+name,None)
