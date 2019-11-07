@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/llpinokio/obc.png?branch=master)](https://travis-ci.com/llpinokio/obc)
-# OBC - Simple C Compiler
+# OBC - Simple version of C <!-- NASM X86 linux --> Compiler
 This project implements a compiler for a simplified version of C
 using python and Lark parsing library
 
@@ -19,6 +19,7 @@ for more information about it's syntax read [`src/grammar.lark`](src/grammar.lar
 
 * python >= 3.6 (some source files have literal string interpolation)
 * pip
+* nasm
 
 ## Installing
 
@@ -39,5 +40,15 @@ and call the compiler on some source file
 ```bash
 ./obc.py [SOURCE FILE PATH]
 ```
+
+by default the following files representing the compiler's IO will be created:
+* `tokens.dot,tokens.pdf`, representing the lexer output
+* `syntax_tree.dot,syntax_tree.pdf`, representing the syntax analyzer output
+* `symtable.dot,symtable.pdf,semantic_tree.dot,semantic_tree.pdf`, representing the semantic analyzer output
+<!-- * `tac.txt`, representing the intermediate code generator output
+* `code.nasm`, representing the code generator output
+* `object.o`, representing the asembler output (NASM)
+* `[program_name]`, representing the linker output (ld) -->
+
 
 for more options use `/obc.py --help`
