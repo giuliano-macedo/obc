@@ -157,4 +157,5 @@ def install_expression(tree):
 	for subtree in tree.iter_subtrees():
 		if not (subtree.data=="expressao" and is_head(subtree)):
 			continue
+		subtree.is_head=True
 		Expression().install(subtree)
