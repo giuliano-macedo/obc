@@ -8,7 +8,7 @@ import sys
 from lex import lex
 from syn import syn
 from sem import sem
-# from icg import icg
+from icg import icg
 # from cg import cg
 class Hooks:
 	Entry=namedtuple("HooksEntry",["func_name","func","kwargs"])
@@ -53,7 +53,7 @@ hooks=Hooks()
 hooks.add_entry("lex","ANALISADOR LÉXICO",lex)
 hooks.add_entry("syn","ANALISADOR SINÁTICO",syn),
 hooks.add_entry("sem","ANALISADOR SEMÂNTICO",sem)
-# hooks.add_entry("icg","GERADOR DE CÓDIGO INTERMEDIÁRIO",icg)
+hooks.add_entry("icg","GERADOR DE CÓDIGO INTERMEDIÁRIO",icg)
 # hooks.add_entry("cg","GERADOR DE CÓDIGO",cg)
 
 for k,v in vars(args).items():
