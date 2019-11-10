@@ -16,7 +16,7 @@ class Transformer(lark.Transformer):
 	def lista_declaracoes(self,tree):
 		if len(tree.children)==2:
 			return tree.children[0]+tree.children[1]
-		return tree.children
+		return tree.children[0]
 	def declaracao(self,tree):
 		return tree.children[0]
 	def declaracao_variaveis(self,tree):
@@ -25,7 +25,9 @@ class Transformer(lark.Transformer):
 		ignore()
 	def declaracao_funcoes(self,tree):
 		var=tree.entry
-		return Label(var.name,tree.children[-1])
+		if var.type=="void":
+			tree.children[-1].append(TA("ret"))
+		return [Label(var.name,tree.children[-1])]
 	def parametros(self,tree):
 		ignore()
 	def lista_parametros(self,tree):
@@ -46,11 +48,16 @@ class Transformer(lark.Transformer):
 		if len(tree.children)==1:
 			return [TA("nop")]
 		return tree.children[0]
-	# def declaracao_selecao(self,tree):
-
-	# def declaracao_iteracao(self,tree):
-
-	# def declaracao_retorno(self,tree):
+	def declaracao_selecao(self,tree):
+		raise RuntimeError(NotImplemented)
+	def declaracao_iteracao(self,tree):
+		raise RuntimeError(NotImplemented)
+	def declaracao_retorno(self,tree):
+		if len(tree.children)==2:
+			return [TA("ret")]
+		horn=tree.children[1]
+		t=horn[-1].arg1
+		return horn+[TA("ret_val",t),TA("ret")]
 
 	def expressao(self,tree):
 		if getattr(tree,"is_head",None)!=None:

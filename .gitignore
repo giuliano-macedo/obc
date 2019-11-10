@@ -7,6 +7,5 @@ symtable.dot
 symtable.pdf
 semantic_tree.pdf
 semantic_tree.dot
-tac.dot
-tac.pdf
+tac.txt
 code.nasm
