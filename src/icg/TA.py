@@ -17,7 +17,8 @@ class TA(lark.Tree):
 		"arg":"arg",
 		"call":"call",
 		"rec":"call",
-		"ret_val":"ret_val"
+		"ret_val":"ret_val",
+		"get_ret":"get_ret",
 	}
 	def __init__(self,op,arg1=None,arg2=None,arg3=None):
 		self.op=op

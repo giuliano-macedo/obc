@@ -7,6 +7,7 @@ class ExpressionVariable(ExpressionTree):
 	def __init__(self,data,var_name,children=[]):
 		super().__init__(data,children)
 		self.var_name=var_name
+class ExpressionActivation(ExpressionVariable):pass
 class ExpressionVector(ExpressionVariable):pass
 class ExpressionInt(int):
 	def __init__(self,*args,**kwargs):
@@ -124,7 +125,7 @@ class Expression():#custom trasnformer
 		"""
 		ativacao: ID P_OPEN argumentos P_CLOSE
 		"""
-		return ExpressionTree("ativacao",args[2])
+		return ExpressionActivation("ativacao",args[0].value,args[2])
 	def argumentos(self,args):
 		"""
 		argumentos: lista_argumentos 

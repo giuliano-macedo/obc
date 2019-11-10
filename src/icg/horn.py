@@ -18,7 +18,14 @@ class Horn(lark.Transformer):
 	def variavel(self,tree):
 		return tree.var_name
 	def ativacao(self,tree):
-		raise RuntimeError(NotImplemented)
+		for arg in tree.children:
+			self.list.append(TA("arg",arg))
+		self.list.append(TA("call",tree.var_name))
+		self.level+=1
+		t=f"t{self.level-1}"
+		self.list.append(TA("get_ret",t))
+		return t
+		# raise RuntimeError(NotImplemented)
 	def __default__(self,data,children,meta):
 		raise RuntimeError(f"not implemented {data}")
 	def ari(self, tree):

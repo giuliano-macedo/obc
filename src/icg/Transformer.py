@@ -63,6 +63,15 @@ class Transformer(lark.Transformer):
 		if getattr(tree,"is_head",None)!=None:
 			ans=horn(tree.expression)
 			self.max_level=max(self.max_level,ans.level)
+			#----------------------------------------------------------------
+			#search for call instructions, if the function is void, remove get_arg instruction
+			#and decrement level
+			call_ta=next((ta for ta in ans.list if ta.op=="call"),None)
+			if call_ta:
+				entry=self.symtable.get(tree,call_ta.arg1)
+				if entry.type=="void":
+					ans.level-=1
+					ans.list.pop(-1)
 			return ans.list
 		return tree
 	# def variavel(self,tree):
