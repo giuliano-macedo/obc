@@ -55,9 +55,9 @@ class Transformer(lark.Transformer):
 	def declaracao_retorno(self,tree):
 		if len(tree.children)==2:
 			return [TA("ret")]
-		horn=tree.children[1]
-		t=horn[-1].arg1
-		return horn+[TA("ret_val",t),TA("ret")]
+		l=tree.children[1]
+		t=l[-1].arg1
+		return l+[TA("ret_val",t),TA("ret")]
 
 	def expressao(self,tree):
 		if getattr(tree,"is_head",None)!=None:

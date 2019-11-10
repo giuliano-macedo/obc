@@ -9,8 +9,8 @@ def horn(exp):
 
 @lark.v_args(tree=True)
 class Horn(lark.Transformer):
-	def __init__(self,_list=list(),level=0):
-		self.list=_list
+	def __init__(self,_list=None,level=0):
+		self.list=_list if _list else []
 		self.level=level
 		for rule in TA.table.keys():
 			setattr(self,rule,self.ari)
