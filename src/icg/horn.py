@@ -1,6 +1,9 @@
 from .TA import TA
 import lark
 def horn(exp):
+	"""
+	sem.Expression TA parser
+	"""
 	if isinstance(exp,int):
 		return Horn([TA("=","t0",str(exp))],1)
 	horn=Horn()

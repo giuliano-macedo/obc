@@ -1,7 +1,7 @@
 import lark
 class TA(lark.Tree):
 	table={
-		"=": "set",
+		"=": "attr",
 		"+": "add",
 		"-": "sub",
 		"*": "mul",
@@ -16,9 +16,10 @@ class TA(lark.Tree):
 		"ret":"ret",
 		"arg":"arg",
 		"call":"call",
-		"rec":"call",
+		"rec":"rec",
 		"ret_val":"ret_val",
 		"get_ret":"get_ret",
+		"set_vec":"set_vec"
 	}
 	def __init__(self,op,arg1=None,arg2=None,arg3=None):
 		self.op=op
@@ -35,6 +36,9 @@ class TA(lark.Tree):
 			return 2
 		return 3
 	def to_str(self):
+		#fix this mess
+		if self.op=="set_vec":
+			return f"set_vec {self.arg1}={self.arg2}"
 		n=self.no_args()
 		if n==0:
 			return self.op

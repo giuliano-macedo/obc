@@ -62,7 +62,6 @@ class Transformer(lark.Transformer):
 	def expressao(self,tree):
 		if getattr(tree,"is_head",None)!=None:
 			ans=horn(tree.expression)
-			self.max_level=max(self.max_level,ans.level)
 			#----------------------------------------------------------------
 			#search for call instructions, if the function is void, remove get_arg instruction
 			#and decrement level
@@ -72,6 +71,21 @@ class Transformer(lark.Transformer):
 				if entry.type=="void":
 					ans.level-=1
 					ans.list.pop(-1)
+			#----------------------------------------------------------------
+			#search for pattern of attr style "x=y", if the 2 variables are vector, then join them all
+			# in single set_vec instructions
+			if  len(ans.list)>0 and ans.list[0].data=="attr":
+				arg1,arg2=ans.list[0].arg1,ans.list[0].arg2
+				#if both are variables
+				if all((not a.isnumeric() for a in (arg1,arg2))):
+					var1=self.symtable.get(tree,arg1)
+					var2=self.symtable.get(tree,arg2)
+					#if both are vectors
+					if all((var.is_vector() for var in (var1,var2))):
+						ans.list=[TA("set_vec",arg1,arg2)]
+						ans.level=0
+
+			self.max_level=max(self.max_level,ans.level)
 			return ans.list
 		return tree
 	# def variavel(self,tree):
