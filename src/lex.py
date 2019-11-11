@@ -19,7 +19,7 @@ TOKENS_DEFINITION=[
 	("SUMOP",r"\+|\-"),
 	("MULTOP",r"\*|\/"),
 	("ARIOP",r"\+|\-|\*|\/"),
-	("RELOP",r"<|<=|>|>=|==|\!="),
+	("RELOP",r"<=|>=|==|\!=|<|>"),
 	("ATTR",r"="),
 	("END_COMMAND",r"\;"),
 	("COMMA",r"\,"),
@@ -99,7 +99,7 @@ def check_unknows_neighbors(tokens):
 def make_dot_label(tokens):
 	ans=[]
 	for token in tokens:
-		token_value="\\"+token.value if len(token.value)==1 else token.value
+		token_value="\\"+token.value if len(token.value)<=2 else token.value
 		row=rf"\<{token.type},{token_value}\>"
 		ans.append(row)
 	return "{"+"|".join(ans)+"}"
