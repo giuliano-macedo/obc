@@ -25,9 +25,9 @@ class TA(lark.Tree):
 	}
 	def __init__(self,op,arg1=None,arg2=None,arg3=None):
 		self.op=op
-		self.arg1=str(arg1) if arg1 else arg1
-		self.arg2=str(arg2) if arg2 else arg2
-		self.arg3=str(arg3) if arg3 else arg3
+		self.arg1=str(arg1) if arg1!=None else arg1
+		self.arg2=str(arg2) if arg2!=None else arg2
+		self.arg3=str(arg3) if arg3!=None else arg3
 		super().__init__(TA.table[op],[self.to_str()])
 	def no_args(self):
 		if self.arg1==None:
