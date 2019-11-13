@@ -4,7 +4,7 @@ This project implements a compiler for a simplified version of C
 using python and Lark parsing library
 
 ## What is the difference between this language and C?
-* only has 2 data types, int and void (even though you can't declare negative numbers)
+* only has 2 data types, int and void
 * there is no preprocessor
 
 ### it does not support the following C features
