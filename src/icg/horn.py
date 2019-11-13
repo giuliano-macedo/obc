@@ -47,18 +47,23 @@ class Horn(lark.Transformer):
 		t=Temporary_Variable(self.level-1)
 		l,r=tree.children
 		if tree.data=="=":
-			ta1=TA("=",l,r)
-			ta2=TA("=",t,l)
-			
+			#check if the variable that is beign set is vector, if it is, add set_at_index instruction
+			#----------------------------------------------------------------------------------------
 			if isinstance(l,Temporary_Variable) and l.is_vec:
-				index_t=next((ta for ta in self.list if ta.arg1==l and ta.op=="index"),None)
+				index_t_index=next((i for i,ta in enumerate(self.list) if ta.arg1==l and ta.op=="index"),None)
+				index_t=self.list.pop(index_t_index)
 				if index_t==None:
 					raise RuntimeError("Enexpected error")
 				print(index_t)
 				u=index_t.arg2
 				i=index_t.arg3
 				ta1=TA("set_at_index",u,i,r)
-			self.list+=[ta1,ta2]
+				ta2=TA("=",t,l)
+				self.list+=[ta1,index_t,ta2]
+			else:
+				ta1=TA("=",l,r)
+				ta2=TA("=",t,l)
+				self.list+=[ta1,ta2]
 		else:
 			ta=TA(tree.data,t,l,r)
 			self.list.append(ta)
