@@ -9,7 +9,12 @@ def horn(exp):
 	horn=Horn()
 	horn.transform(exp)
 	return horn
-
+class Temporary_Variable(str):
+	def __init__(self,i,is_vec=False):
+		self.i=i
+		self.is_vec=is_vec
+	def __new__(cls,i,is_vec=False):
+		return str.__new__(cls,f"t{i}")
 @lark.v_args(tree=True)
 class Horn(lark.Transformer):
 	def __init__(self,_list=None,level=0):
@@ -17,7 +22,14 @@ class Horn(lark.Transformer):
 		self.level=level
 		for rule in TA.table.keys():
 			setattr(self,rule,self.ari)
-
+	def vetor(self,tree):
+		self.level+=1
+		t=Temporary_Variable(self.level-1,is_vec=True)
+		u=tree.var_name
+		i=tree.children[0]
+		ta=TA("index",t,u,i)
+		self.list.append(ta)
+		return t
 	def variavel(self,tree):
 		return tree.var_name
 	def ativacao(self,tree):
@@ -25,19 +37,27 @@ class Horn(lark.Transformer):
 			self.list.append(TA("arg",arg))
 		self.list.append(TA("call",tree.var_name))
 		self.level+=1
-		t=f"t{self.level-1}"
+		t=Temporary_Variable(self.level-1)
 		self.list.append(TA("get_ret",t))
 		return t
-		# raise RuntimeError(NotImplemented)
 	def __default__(self,data,children,meta):
 		raise RuntimeError(f"not implemented {data}")
 	def ari(self, tree):
 		self.level+=1
-		t=f"t{self.level-1}"
+		t=Temporary_Variable(self.level-1)
 		l,r=tree.children
 		if tree.data=="=":
 			ta1=TA("=",l,r)
 			ta2=TA("=",t,l)
+			
+			if isinstance(l,Temporary_Variable) and l.is_vec:
+				index_t=next((ta for ta in self.list if ta.arg1==l and ta.op=="index"),None)
+				if index_t==None:
+					raise RuntimeError("Enexpected error")
+				print(index_t)
+				u=index_t.arg2
+				i=index_t.arg3
+				ta1=TA("set_at_index",u,i,r)
 			self.list+=[ta1,ta2]
 		else:
 			ta=TA(tree.data,t,l,r)

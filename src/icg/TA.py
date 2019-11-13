@@ -19,7 +19,9 @@ class TA(lark.Tree):
 		"rec":"rec",
 		"ret_val":"ret_val",
 		"get_ret":"get_ret",
-		"set_vec":"set_vec"
+		"set_vec":"set_vec",
+		"index":"index",
+		"set_at_index":"set_at_index"
 	}
 	def __init__(self,op,arg1=None,arg2=None,arg3=None):
 		self.op=op
@@ -39,6 +41,8 @@ class TA(lark.Tree):
 		#fix this mess
 		if self.op=="set_vec":
 			return f"set_vec {self.arg1}={self.arg2}"
+		if self.op=="set_at_index":
+			return f"{self.arg1} {self.op} {self.arg2} the value {self.arg3}"
 		n=self.no_args()
 		if n==0:
 			return self.op
@@ -47,7 +51,7 @@ class TA(lark.Tree):
 		elif n==2:
 			return f"{self.arg1}={self.arg2}"
 		else:
-			return "".join((str(self.arg1),"=",str(self.arg2),self.op,str(self.arg3) ))
+			return f"{self.arg1}={self.arg2} {self.op} {self.arg3}"
 	def __repr__(self):
 		return f"TA{self.op,self.arg1,self.arg2,self.arg3}"
 
