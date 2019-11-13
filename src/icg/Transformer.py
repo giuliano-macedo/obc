@@ -49,7 +49,24 @@ class Transformer(lark.Transformer):
 			return [TA("nop")]
 		return tree.children[0]
 	def declaracao_selecao(self,tree):
-		raise RuntimeError(NotImplemented)
+		exp=tree.children[2]
+		i=tree.label.split("if")[-1]
+		print(exp)
+		if len(tree.children)==5: #Simple if
+			if_label=Label(f".if{i}",tree.children[-1])
+			end_label=Label(f".endif{i}",[])
+			jmp=TA("ifz_goto",exp[-1].arg1,end_label.name)
+			return exp+[jmp,if_label,end_label]
+		else: # if with else
+
+			else_label=Label(f".else{i}",tree.children[-1])
+			end_label=Label(f".endif{i}",[])
+
+			if_label=Label(f".if{i}",tree.children[-3]+[TA("goto",end_label.name)])
+
+			jmp=TA("ifz_goto",exp[-1].arg1,else_label.name)
+			return exp+[jmp,if_label,else_label,end_label]
+		
 	def declaracao_iteracao(self,tree):
 		raise RuntimeError(NotImplemented)
 	def declaracao_retorno(self,tree):

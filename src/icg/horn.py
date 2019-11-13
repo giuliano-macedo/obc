@@ -51,9 +51,9 @@ class Horn(lark.Transformer):
 			#----------------------------------------------------------------------------------------
 			if isinstance(l,Temporary_Variable) and l.is_vec:
 				index_t_index=next((i for i,ta in enumerate(self.list) if ta.arg1==l and ta.op=="index"),None)
+				if index_t_index==None:
+					raise RuntimeError("Unexpected error")
 				index_t=self.list.pop(index_t_index)
-				if index_t==None:
-					raise RuntimeError("Enexpected error")
 				print(index_t)
 				u=index_t.arg2
 				i=index_t.arg3

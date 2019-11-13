@@ -21,7 +21,9 @@ class TA(lark.Tree):
 		"get_ret":"get_ret",
 		"set_vec":"set_vec",
 		"index":"index",
-		"set_at_index":"set_at_index"
+		"set_at_index":"set_at_index",
+		"ifz_goto":"ifz_goto",
+		"goto":"goto"
 	}
 	def __init__(self,op,arg1=None,arg2=None,arg3=None):
 		self.op=op
@@ -43,6 +45,8 @@ class TA(lark.Tree):
 			return f"set_vec {self.arg1}={self.arg2}"
 		if self.op=="set_at_index":
 			return f"{self.arg1} {self.op} {self.arg2} the value {self.arg3}"
+		if self.op=="ifz_goto":
+			return f"if {self.arg1} is zero, goto {self.arg2}"
 		n=self.no_args()
 		if n==0:
 			return self.op

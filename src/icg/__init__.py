@@ -3,7 +3,11 @@ from .TA import TA
 import lark
 
 def tabify(l):
-	return ["\t"+line for line in l]
+	for i,elem in enumerate(l):
+		if isinstance(elem,str):
+			l[i]="\t"+elem
+		else:
+			tabify(elem)
 
 @lark.v_args(tree=True)
 class Tac2File(lark.Transformer):
@@ -14,12 +18,14 @@ class Tac2File(lark.Transformer):
 			setattr(self,rule,self.ta)
 	def tac(self,tree):
 		self.f.write(f"<max_level={tree.max_level}>\n")
-		for children in tree.children:
-			for line in children:
-				self.f.write(line)
+		# https://stackoverflow.com/a/12474246/5133524
+		flatten=lambda l: sum(map(flatten,l),[]) if isinstance(l,list) else [l]
+		for line in flatten(tree.children):
+			self.f.write(line)
 		self.f.close()
 	def label(self,tree):
-		return [f"{tree.name}:\n"]+tabify(tree.children)
+		tabify(tree.children)
+		return [f"{tree.name}:\n"]+tree.children
 	def ta(self,tree):
 		return tree.to_str()+"\n"
 def icg(tree,symtable):
