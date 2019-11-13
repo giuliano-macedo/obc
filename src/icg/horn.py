@@ -5,7 +5,9 @@ def horn(exp):
 	sem.Expression TA parser
 	"""
 	if isinstance(exp,int):
-		return Horn([TA("=","t0",str(exp))],1)
+		return Horn([TA("=",Temporary_Variable(0),str(exp))],1)
+	if exp.data=="variavel":
+		return Horn([TA("=",Temporary_Variable(0),str(exp.var_name))],1)
 	horn=Horn()
 	horn.transform(exp)
 	return horn
@@ -15,6 +17,8 @@ class Temporary_Variable(str):
 		self.is_vec=is_vec
 	def __new__(cls,i,is_vec=False):
 		return str.__new__(cls,f"t{i}")
+	def __str__(self):
+		return self
 @lark.v_args(tree=True)
 class Horn(lark.Transformer):
 	def __init__(self,_list=None,level=0):
@@ -54,7 +58,6 @@ class Horn(lark.Transformer):
 				if index_t_index==None:
 					raise RuntimeError("Unexpected error")
 				index_t=self.list.pop(index_t_index)
-				print(index_t)
 				u=index_t.arg2
 				i=index_t.arg3
 				ta1=TA("set_at_index",u,i,r)

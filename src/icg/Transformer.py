@@ -1,5 +1,5 @@
 import lark
-from .horn import horn
+from .horn import horn,Temporary_Variable
 from .TA import TA,Label
 def ignore():
 	raise lark.Discard()
@@ -18,7 +18,7 @@ class Transformer(lark.Transformer):
 			return tree.children[0]+tree.children[1]
 		return tree.children[0]
 	def declaracao(self,tree):
-		return tree.children[0]
+		return tree.children[0] if len(tree.children)!=0 else []
 	def declaracao_variaveis(self,tree):
 		ignore()
 	def tipo(self,tree):
@@ -51,7 +51,6 @@ class Transformer(lark.Transformer):
 	def declaracao_selecao(self,tree):
 		exp=tree.children[2]
 		i=tree.label.split("if")[-1]
-		print(exp)
 		if len(tree.children)==5: #Simple if
 			if_label=Label(f".if{i}",tree.children[-1])
 			end_label=Label(f".endif{i}",[])
@@ -68,7 +67,8 @@ class Transformer(lark.Transformer):
 			return exp+[jmp,if_label,else_label,end_label]
 		
 	def declaracao_iteracao(self,tree):
-		raise RuntimeError(NotImplemented)
+		NotImplemented
+		return [TA("nop")]
 	def declaracao_retorno(self,tree):
 		if len(tree.children)==2:
 			return [TA("ret")]
@@ -94,7 +94,7 @@ class Transformer(lark.Transformer):
 			if  len(ans.list)>0 and ans.list[0].data=="attr":
 				arg1,arg2=ans.list[0].arg1,ans.list[0].arg2
 				#if both are variables
-				if all((not a.isnumeric() for a in (arg1,arg2))):
+				if all((not isinstance(a,Temporary_Variable) and not a.isnumeric() for a in (arg1,arg2))):
 					var1=self.symtable.get(tree,arg1)
 					var2=self.symtable.get(tree,arg2)
 					#if both are vectors
