@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/llpinokio/obc.png?branch=master)](https://travis-ci.com/llpinokio/obc)
 # OBC - Simple version of C <!-- NASM X86 linux --> Compiler
-This project implements a compiler for a simplified version of C
+This project implements a compiler for a simplified version of C with error recovery
 using python and Lark parsing library
 
 ## What is the difference between this language and C?

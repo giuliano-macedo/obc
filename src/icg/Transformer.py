@@ -67,8 +67,17 @@ class Transformer(lark.Transformer):
 			return exp+[jmp,if_label,else_label,end_label]
 		
 	def declaracao_iteracao(self,tree):
-		NotImplemented
-		return [TA("nop")]
+		exp=tree.children[2]
+		i=tree.label.split("while")[-1]
+		end_label=Label(f".endwhile{i}",[])
+
+		jmp=TA("ifz_goto",exp[-1].arg1,end_label.name)
+		
+		while_label=Label(f".while{i}",tree.children[-1]+exp)
+		while_label.children.append(TA("ifnz_goto",exp[-1].arg1,while_label.name))
+
+		return exp+[jmp,while_label,end_label]
+
 	def declaracao_retorno(self,tree):
 		if len(tree.children)==2:
 			return [TA("ret")]
