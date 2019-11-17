@@ -1,6 +1,11 @@
 from .Transformer import Transformer
-from .TA import TA
+from .TA import TA,Label
 import lark
+import re
+
+def flatten(l):
+	# https://stackoverflow.com/a/12474246/5133524
+	return sum(map(flatten,l),[]) if isinstance(l,list) else [l]
 
 def tabify(l):
 	for i,elem in enumerate(l):
@@ -18,8 +23,6 @@ class Tac2File(lark.Transformer):
 			setattr(self,rule,self.ta)
 	def tac(self,tree):
 		self.f.write(f"<max_level={tree.max_level}>\n")
-		# https://stackoverflow.com/a/12474246/5133524
-		flatten=lambda l: sum(map(flatten,l),[]) if isinstance(l,list) else [l]
 		for line in flatten(tree.children):
 			self.f.write(line)
 		self.f.close()

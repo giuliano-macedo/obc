@@ -52,16 +52,16 @@ class Transformer(lark.Transformer):
 		exp=tree.children[2]
 		i=tree.label.split("if")[-1]
 		if len(tree.children)==5: #Simple if
-			if_label=Label(f".if{i}",tree.children[-1])
-			end_label=Label(f".endif{i}",[])
+			if_label=Label(f"if{i}",tree.children[-1])
+			end_label=Label(f"endif{i}",[])
 			jmp=TA("ifz_goto",exp[-1].arg1,end_label.name)
 			return exp+[jmp,if_label,end_label]
 		else: # if with else
 
-			else_label=Label(f".else{i}",tree.children[-1])
-			end_label=Label(f".endif{i}",[])
+			else_label=Label(f"else{i}",tree.children[-1])
+			end_label=Label(f"endif{i}",[])
 
-			if_label=Label(f".if{i}",tree.children[-3]+[TA("goto",end_label.name)])
+			if_label=Label(f"if{i}",tree.children[-3]+[TA("goto",end_label.name)])
 
 			jmp=TA("ifz_goto",exp[-1].arg1,else_label.name)
 			return exp+[jmp,if_label,else_label,end_label]
@@ -69,11 +69,11 @@ class Transformer(lark.Transformer):
 	def declaracao_iteracao(self,tree):
 		exp=tree.children[2]
 		i=tree.label.split("while")[-1]
-		end_label=Label(f".endwhile{i}",[])
+		end_label=Label(f"endwhile{i}",[])
 
 		jmp=TA("ifz_goto",exp[-1].arg1,end_label.name)
 		
-		while_label=Label(f".while{i}",tree.children[-1]+exp)
+		while_label=Label(f"while{i}",tree.children[-1]+exp)
 		while_label.children.append(TA("ifnz_goto",exp[-1].arg1,while_label.name))
 
 		return exp+[jmp,while_label,end_label]
