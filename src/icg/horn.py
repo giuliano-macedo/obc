@@ -12,11 +12,11 @@ def horn(exp):
 	horn.transform(exp)
 	return horn
 class Temporary_Variable(str):
-	def __init__(self,i,is_vec=False):
-		self.i=i
-		self.is_vec=is_vec
 	def __new__(cls,i,is_vec=False):
-		return str.__new__(cls,f"t{i}")
+		obj=str.__new__(cls,f"t{i}")
+		obj.i=i
+		obj.is_vec=is_vec
+		return obj
 	def __str__(self):
 		return self
 @lark.v_args(tree=True)
