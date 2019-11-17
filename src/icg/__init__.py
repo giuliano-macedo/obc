@@ -1,7 +1,6 @@
 from .Transformer import Transformer
 from .TA import TA,Label
 import lark
-import re
 
 def flatten(l):
 	# https://stackoverflow.com/a/12474246/5133524
@@ -31,8 +30,35 @@ class Tac2File(lark.Transformer):
 		return [f"{tree.name}:\n"]+tree.children
 	def ta(self,tree):
 		return tree.to_str()+"\n"
+def fix_var_name(symtable,ta_list,scope=None):
+	def add_scope_if_possible(scope,var):
+		if var==None:
+			return var
+		entry=symtable.get("."+scope,var)
+		if entry==None:
+			return var
+		else:
+			if entry.scope!="":
+				return entry.scope[1:]+"."+entry.name
+			else:
+				return entry.name
+	if scope==None:
+		for inst in ta_list:
+			if isinstance(inst,Label):
+				fix_var_name(symtable,inst.children,inst.name)
+		return
+	for inst in ta_list:
+		if isinstance(inst,Label):
+			inst.name=scope+"."+inst.name
+			fix_var_name(symtable,inst.children,scope)
+		else:
+			inst.arg1=add_scope_if_possible(scope,inst.arg1)
+			inst.arg2=add_scope_if_possible(scope,inst.arg2)
+			inst.arg3=add_scope_if_possible(scope,inst.arg3)
+
 def icg(tree,symtable):
 	tac_tree=Transformer(symtable).transform(tree)
+	fix_var_name(symtable,tac_tree.children)
 	fname="tac.txt"
 	Tac2File(fname).transform(tac_tree)
 	exit()
