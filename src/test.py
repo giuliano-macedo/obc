@@ -1,6 +1,8 @@
 from subprocess import check_output,CalledProcessError
 import re
 import os
+import multiprocessing
+import io
 
 def run(fname_path):
 	return_code=0
@@ -52,7 +54,7 @@ fname_regex=re.compile(r"(lexical|syntax|semantic)_(warn|err).*")
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-failed=False
+data=[] #(expected,full_fname) list
 
 for fname in sorted(os.listdir(os.path.join("..","samples"))):
 	body,stem=os.path.splitext(fname)
@@ -70,16 +72,30 @@ for fname in sorted(os.listdir(os.path.join("..","samples"))):
 	else:
 		expected="ok"
 	
-	err,out=run(os.path.join("..","samples",fname))
-	
+	data.append((expected,os.path.join("..","samples",fname)))
+def handler(args):
+	#returns (did_failed, message)
+	expected,full_fname=args
+	fname=os.path.split(full_fname)[-1]
+	err,out=run(full_fname)
+	string_file=io.StringIO()
 	if err!=expected:
-		print(f"error on file {repr(fname)}")
-		print(f"it was expected {repr(expected)}, but got {repr(err)}")
-		print("="*64)
-		print(out.decode("utf-8"))
-		failed=True
+		print(f"error on file {repr(fname)}",file=string_file)
+		print(f"it was expected {repr(expected)}, but got {repr(err)}",file=string_file)
+		print("="*64,file=string_file)
+		print(out.decode("utf-8"),file=string_file)
+		did_failed=True
 	else:
-		print(f"{repr(fname)} OK")
+		print(f"{repr(fname)} OK",file=string_file)
+		did_failed=False
+	string_file.seek(0)
+	return did_failed,string_file.read()
+failed=False
+pool=multiprocessing.Pool()
+for did_failed,message in pool.imap(handler,data):
+	if did_failed:
+		failed=True
+	print(message,end="")
 print("="*64)
 if failed:
 	print("NOT OK")
