@@ -15,16 +15,15 @@ def tabify(l):
 
 @lark.v_args(tree=True)
 class Tac2File(lark.Transformer):
-	def __init__(self,fname,*args,**kwargs):
-		self.f=open(fname,"w")
+	def __init__(self,*args,**kwargs):
 		super().__init__(*args,**kwargs)
 		for rule in TA.table.values():
 			setattr(self,rule,self.ta)
 	def tac(self,tree):
-		self.f.write(f"<max_level={tree.max_level}>\n")
-		for line in flatten(tree.children):
-			self.f.write(line)
-		self.f.close()
+		with open("tac.txt","w") as f:
+			f.write(f"<max_level={tree.max_level}>\n")
+			for line in flatten(tree.children):
+				f.write(line)
 	def label(self,tree):
 		tabify(tree.children)
 		return [f"{tree.name}:\n"]+tree.children
@@ -56,10 +55,9 @@ def fix_var_name(symtable,ta_list,scope=None):
 			inst.arg2=add_scope_if_possible(scope,inst.arg2)
 			inst.arg3=add_scope_if_possible(scope,inst.arg3)
 
-def icg(tree,symtable):
+def icg(tree,symtable,no_output=False):
 	tac_tree=Transformer(symtable).transform(tree)
 	fix_var_name(symtable,tac_tree.children)
-	fname="tac.txt"
-	Tac2File(fname).transform(tac_tree)
-	exit()
-	# return True
+	if not no_output:
+		Tac2File().transform(tac_tree)
+	return True,tac_tree,symtable

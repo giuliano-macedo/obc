@@ -42,6 +42,8 @@ parser.add_argument("-SC","--sem-complete-tree", action='store_true',help="rende
 parser.add_argument("--sem-no-output",action="store_true",help="no sem process output ('semantic_tree.pdf','semantic_tree.dot')")
 parser.add_argument("--sem-show",action="store_true",help="no sem process semantic_tree.pdf show")
 
+parser.add_argument("-IN","--icg-no-output",action="store_true",help="no icg process output (tac.txt)")
+
 args=parser.parse_args()
 
 if args.no_output:
