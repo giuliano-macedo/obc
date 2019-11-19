@@ -16,7 +16,6 @@ class TA(lark.Tree):
 		"ret":"ret",
 		"arg":"arg",
 		"call":"call",
-		"rec":"rec",
 		"ret_val":"ret_val",
 		"get_ret":"get_ret",
 		"set_vec":"set_vec",
