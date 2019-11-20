@@ -18,6 +18,7 @@ for more information about it's syntax read [`src/grammar.lark`](src/grammar.lar
 
 ### Builtin functions and variables
 This language consists of the following builtin functions
+
 |declaration|description|
 |--|--|
 |``` void putchar(int c)```|writes in the stdout the first byte indicated by the variable c.|
