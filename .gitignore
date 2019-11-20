@@ -1,3 +1,7 @@
+*
+!/**/
+!*.*
+!makefile
 __pycache__
 tokens.pdf
 tokens.dot
