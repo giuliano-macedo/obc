@@ -31,7 +31,6 @@ putint:
 	putint.enddowhile0:		;}while(eax!=0)
 
 
-	break:
 	cmp byte [putint.flag],1
 	jne putint.endif1
 	putint.if1:

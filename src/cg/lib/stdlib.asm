@@ -32,19 +32,6 @@ _start:
 	push dword 4242130
 	call putint
 
-	call getchar
-	
-	pop dword eax
-	
-	push dword eax
-	push dword eax
-	call putint
-	
-	call putchar
-	push dword 10
-	call putchar
-
-
 	call getint
 	
 	pop dword eax
@@ -57,6 +44,17 @@ _start:
 	push dword 10
 	call putchar
 
+	call getchar
+	
+	pop dword eax
+	
+	push dword eax
+	push dword eax
+	call putint
+	
+	call putchar
+	push dword 10
+	call putchar
 
 
 	mov eax, 1			; exit(
@@ -82,7 +80,7 @@ section .bss
 	getchar.c:	resb 4
 	getint.ans :	resb 4
 	getint.fact :	resb 4
-	; getint.c :	resb 4
+	getint.flag:	resb 1
 	
 	str:		resb 52	;13*4
 	;{symtable}
