@@ -1,6 +1,8 @@
 from .Transformer import Transformer
 from .TA import TA,Label
 import lark
+import io
+import pickle
 
 def flatten(l):
 	# https://stackoverflow.com/a/12474246/5133524
@@ -59,5 +61,10 @@ def icg(tree,symtable,no_output=False):
 	tac_tree=Transformer(symtable).transform(tree)
 	fix_var_name(symtable,tac_tree.children)
 	if not no_output:
-		Tac2File().transform(tac_tree)
+		buff=io.BytesIO()
+		pickle.dump(tac_tree,buff)
+		buff.seek(0)
+		tac_tree_copy=pickle.load(buff)
+		Tac2File().transform(tac_tree_copy)
+		del tac_tree_copy,buff
 	return True,tac_tree,symtable
