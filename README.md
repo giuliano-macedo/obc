@@ -60,7 +60,7 @@ by default the following files representing the compiler's IO will be created:
 * `syntax_tree.dot,syntax_tree.pdf`, representing the syntax analyzer output
 * `symtable.dot,symtable.pdf,semantic_tree.dot,semantic_tree.pdf`, representing the semantic analyzer output
 * `tac.txt`, representing the intermediate code generator output
-* `code.nasm`, representing the code generator output
+* `code.asm`, representing the code generator output
 * `object.o`, representing the asembler output (NASM)
 * `[program_name]`, representing the linker output (ld)
 
