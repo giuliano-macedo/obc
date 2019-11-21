@@ -5,6 +5,7 @@ class BaseEntry:
 		self.scope=scope
 		self.line=line
 		self.referenced=kwargs.get("referenced",False)
+		self.is_builtin=kwargs.get("is_builtin",False)
 	def is_function(self): #virtual
 		raise NotImplementedError()
 	def is_var(self): #virtual

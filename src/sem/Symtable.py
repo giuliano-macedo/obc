@@ -11,34 +11,34 @@ class Symtable:
 		#input
 		#------------------------------------------------------------------------
 		# int getchar(void)
-		self.add_function("getchar","int","",0,[],does_return=True,referenced=True)
+		self.add_function("getchar","int","",0,[],does_return=True,referenced=True,is_builtin=True)
 		# int getint(void)
-		self.add_function("getint","int","",0,[],does_return=True,referenced=True)
+		self.add_function("getint","int","",0,[],does_return=True,referenced=True,is_builtin=True)
 		#output
 		#------------------------------------------------------------------------
 		# void putint(int n)
 		args=[]
-		self.add_function("putint","void","",0,args,does_return=True,referenced=True)
-		self.add_variable("n","int","putint",0,initialized=True,referenced=True)
+		self.add_function("putint","void","",0,args,does_return=True,referenced=True,is_builtin=True)
+		self.add_variable("n","int","putint",0,initialized=True,referenced=True,is_builtin=True)
 		args.append(self.get("putint","n"))
 
 		# void putstr(int str[]) ; must be null ended
 		args=[]
-		self.add_function("putstr","void","",0,args,does_return=True,referenced=True)
-		self.add_vector("str","int","putstr",0,None,initialized=True,referenced=True)
+		self.add_function("putstr","void","",0,args,does_return=True,referenced=True,is_builtin=True)
+		self.add_vector("str","int","putstr",0,None,initialized=True,referenced=True,is_builtin=True)
 		args.append(self.get("putstr","str"))
 
 		
 		# void putchar(int c);
 		args=[]
-		self.add_function("putchar","void","",0,args,does_return=True,referenced=True)
-		self.add_variable("c","int","putchar",0,initialized=True,referenced=True)
+		self.add_function("putchar","void","",0,args,does_return=True,referenced=True,is_builtin=True)
+		self.add_variable("c","int","putchar",0,initialized=True,referenced=True,is_builtin=True)
 		args.append(self.get("putchar","c"))
 
 		#'contants'
 		#------------------------------------------------------------
 		
-		self.add_variable("SIZEOFINT","int","",0,initialized=True,referenced=True)# int SIZEOFINT=4;
+		self.add_variable("SIZEOFINT","int","",0,initialized=True,referenced=True,is_builtin=True)# int SIZEOFINT=4;
 
 	def add_variable(self,name,_type,scope,line,**kwargs):
 		var=self.table.get(scope+"."+name,None)
