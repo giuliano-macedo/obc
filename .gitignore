@@ -13,3 +13,4 @@ semantic_tree.pdf
 semantic_tree.dot
 tac.txt
 code.asm
+object.o

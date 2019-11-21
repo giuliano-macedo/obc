@@ -61,9 +61,15 @@ class Transformer(lark.Transformer):
 		return ["ret"]
 	def arg(self,tree):
 		#TODO IF VARIABLE IS VECTOR, DO NOT DEREFERENCIATE IT
-		return [
-			f"push dword {common(tree.arg1)}"
-		]
+		entry=tree.arg1_entry
+		if not entry or not entry.is_vector():
+			return [
+				f"push dword {common(tree.arg1)}"
+			]
+		else:
+			return [
+				f"push dword {tree.arg1}"
+			]
 	def call(self,tree):
 		#TODO LOCAL VARIABLES BACKUP SOMEHOW
 		return [

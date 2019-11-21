@@ -25,6 +25,15 @@ class Hooks:
 			tuple function_name,function"""
 		for v in self.hooks.values():
 			yield v.func_name,lambda *args:v.func(*args,**v.kwargs)
+
+def command(cmd_str):
+	print(cmd_str)
+	try:
+		os.system(cmd_str)
+	except Exception as e:
+		print(e)
+		return False,
+	return True,
 parser=argparse.ArgumentParser()
 parser.add_argument("input",type=argparse.FileType('r'))
 parser.add_argument("-P","--pass-through",action="store_true",help="don't stop if some process returns error")
@@ -57,6 +66,9 @@ hooks.add_entry("syn","ANALISADOR SINÁTICO",syn),
 hooks.add_entry("sem","ANALISADOR SEMÂNTICO",sem)
 hooks.add_entry("icg","GERADOR DE CÓDIGO INTERMEDIÁRIO",icg)
 hooks.add_entry("cg","GERADOR DE CÓDIGO",cg)
+hooks.add_entry("nasm","MONTADOR",lambda :command("nasm -felf32 code.asm -o object.o"))
+fname_out=os.path.splitext(os.path.split(args.input.name)[-1])[0]
+hooks.add_entry("ld","LINKADOR",lambda :command(f"ld -m elf_i386 object.o -o '{fname_out}'"))
 
 for k,v in vars(args).items():
 	k_splitted=k.split("_")

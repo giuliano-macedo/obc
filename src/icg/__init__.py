@@ -34,15 +34,15 @@ class Tac2File(lark.Transformer):
 def fix_var_name(symtable,ta_list,scope=None):
 	def add_scope_if_possible(scope,var):
 		if var==None:
-			return var
+			return var,None
 		entry=symtable.get("."+scope,var)
 		if entry==None:
-			return var
+			return var,None
 		else:
 			if entry.scope!="":
-				return entry.scope[1:]+"."+entry.name
+				return entry.scope[1:]+"."+entry.name,entry
 			else:
-				return entry.name
+				return entry.name,entry
 	if scope==None:
 		for inst in ta_list:
 			if isinstance(inst,Label):
@@ -53,9 +53,9 @@ def fix_var_name(symtable,ta_list,scope=None):
 			inst.name=scope+"."+inst.name
 			fix_var_name(symtable,inst.children,scope)
 		else:
-			inst.arg1=add_scope_if_possible(scope,inst.arg1)
-			inst.arg2=add_scope_if_possible(scope,inst.arg2)
-			inst.arg3=add_scope_if_possible(scope,inst.arg3)
+			inst.arg1,inst.arg1_entry=add_scope_if_possible(scope,inst.arg1)
+			inst.arg2,inst.arg2_entry=add_scope_if_possible(scope,inst.arg2)
+			inst.arg3,inst.arg3_entry=add_scope_if_possible(scope,inst.arg3)
 
 def icg(tree,symtable,no_output=False):
 	tac_tree=Transformer(symtable).transform(tree)
