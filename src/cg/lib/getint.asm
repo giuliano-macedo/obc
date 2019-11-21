@@ -5,7 +5,6 @@ getint:
 
 	push dword 0	;$
 
-	break:
 	getint.while0:	;while(true){
 		call getchar
 		pop dword edx	;edx=getchar()

@@ -8,7 +8,7 @@ putchar:
 
 	mov eax, 4			; write(
 	mov ebx, 1			;   stdout,
-	mov ecx, putchar.c			;   c,
+	mov ecx, putchar.c	;   c,
 	mov edx, 1			;   1
 	int 0x80			; );
 	ret

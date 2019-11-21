@@ -1,11 +1,14 @@
 section .text
 global _start
 
-%include "lib/putchar.asm"
-%include "lib/putstr.asm"
-%include "lib/putint.asm"
-%include "lib/getchar.asm"
-%include "lib/getint.asm"
+%include "cg/lib/putchar.asm"
+%include "cg/lib/putstr.asm"
+%include "cg/lib/putint.asm"
+%include "cg/lib/getchar.asm"
+%include "cg/lib/getint.asm"
+
+;stdlib	
+;-------------------------------------------------------
 
 _start:
 	mov dword [SIZEOFINT],4
@@ -15,10 +18,13 @@ _start:
 	mov eax, 1			; exit(
 	mov ebx, 0			;   EXIT_SUCCESS
 	int 0x80			; );
-
+;user
+;-------------------------------------------------------
 {code}
 
 section .bss
+;stdlib	
+;-------------------------------------------------------
 	SIZEOFINT:	resb 4
 
 	putint.n:	resb 4
@@ -31,5 +37,6 @@ section .bss
 	getint.ans :	resb 4
 	getint.fact :	resb 4
 	getint.flag:	resb 1
-	
-	{symtable}
+;user
+;-------------------------------------------------------
+{symtable}

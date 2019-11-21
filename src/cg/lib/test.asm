@@ -3,11 +3,6 @@ global _start
 _start:
 	mov dword [SIZEOFINT],4
 
-	; call .main
-
-	; push dword 13
-	; call .putint
-
 	push dword 'a'
 	call putchar
 	push dword 10
@@ -26,7 +21,7 @@ _start:
 	mov byte [str+ 40],"d"
 	mov byte [str+ 44],10
 	mov byte [str+ 48],0
-	push str
+	push dword str
 	call putstr
 
 	push dword 4242130
@@ -83,4 +78,3 @@ section .bss
 	getint.flag:	resb 1
 	
 	str:		resb 52	;13*4
-	;{symtable}
