@@ -36,13 +36,34 @@ class Transformer(lark.Transformer):
 				f"mov dword {common(tree.arg1)},{tree.arg2}"
 			]
 	def add(self,tree):
-		return []
+		return [
+			f"mov dword eax,{common(tree.arg2)}",
+			f"mov dword ebx,{common(tree.arg3)}",
+			f"add eax,ebx",
+			f"mov dword [{tree.arg1}],eax"
+		]
 	def sub(self,tree):
-		return []
+		return [
+			f"mov dword eax,{common(tree.arg2)}",
+			f"mov dword ebx,{common(tree.arg3)}",
+			f"sub eax,ebx",
+			f"mov dword [{tree.arg1}],eax"
+		]
 	def mul(self,tree):
-		return []
+		return [
+			f"mov dword eax,{common(tree.arg2)}",
+			f"mov dword ebx,{common(tree.arg3)}",
+			f"mul ebx",
+			f"mov dword [{tree.arg1}],eax"
+		]
 	def div(self,tree):
-		return []
+		return [
+			f"xor edx,edx",
+			f"mov dword eax,{common(tree.arg2)}",
+			f"mov dword ecx,{common(tree.arg3)}",
+			f"div ecx",
+			f"mov dword [{tree.arg1}],eax"
+		]
 	def gt(self,tree):
 		return []
 	def gte(self,tree):
@@ -56,11 +77,10 @@ class Transformer(lark.Transformer):
 	def neq(self,tree):
 		return []
 	def nop(self,tree):
-		return []
+		return ["nop"]
 	def ret(self,tree):
 		return ["ret"]
 	def arg(self,tree):
-		#TODO IF VARIABLE IS VECTOR, DO NOT DEREFERENCIATE IT
 		entry=tree.arg1_entry
 		if not entry or not entry.is_vector():
 			return [
@@ -108,5 +128,5 @@ class Transformer(lark.Transformer):
 		return []
 	def ifnz_goto(self,tree):
 		return []
-	def got(self,tree):
+	def goto(self,tree):
 		return []
