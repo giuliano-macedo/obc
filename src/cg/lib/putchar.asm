@@ -1,10 +1,10 @@
 putchar:
-	pop ecx				; some junk from call
+	pop ecx				; address of return from call
 	
 	pop eax
 	mov byte [putchar.c],al
 
-	push ecx			; putting it back, it must be important
+	push ecx			; putting it back, it is important
 
 	mov eax, 4			; write(
 	mov ebx, 1			;   stdout,

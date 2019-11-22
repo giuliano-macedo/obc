@@ -1,9 +1,9 @@
 putstr:
-	pop ecx				; some junk from call
+	pop ecx				; address of return from call
 	
 	pop dword [putstr.str]
 
-	push ecx			; putting it back, it must be important
+	push ecx			; putting it back, it is important
 	
 	mov eax,[putstr.str]	;int* eax=putstr.str
 	cmp dword [eax],0
