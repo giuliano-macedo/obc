@@ -23,7 +23,7 @@ This language consists of the following builtin functions
 |--|--|
 |``` void putchar(int c)```|writes in the stdout the first byte indicated by the variable c.|
 |``` void putstr(int str[])```|writes in the stdout all the first bytes indicated by the variable str, it must be null-ended.|
-|``` void putint(int n)```|writes in the stdout a integer n.|
+|``` void putint(int n)```|writes in the stdout an integer n.|
 |``` int getchar(void)```|returns single byte read from stdin.|
 |``` int getint(void)```|returns integer read from stdin.|
 |```int SIZEOFINT```|represents the size in bytes of int variables (4)|
