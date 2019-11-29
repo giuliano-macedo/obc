@@ -1,4 +1,4 @@
-from collections import deque
+from collections import defaultdict
 import lark
 from .symtable_entries import VariableEntry,VectorEntry,FunctionEntry
 import graphviz
@@ -6,6 +6,7 @@ from . import myrepr
 class Symtable:
 	def __init__(self):
 		self.table={}
+		self.scoped_table=defaultdict(list)
 		#std 'prototypes'
 
 		#input
@@ -44,18 +45,20 @@ class Symtable:
 		var=self.table.get(scope+"."+name,None)
 		if var!=None:
 			return var
-		self.table[scope+"."+name]=VariableEntry(
+		entry=VariableEntry(
 			name=name,
 			_type=_type,
 			scope=scope,
 			line=line,
 			**kwargs
 		)
+		self.table[scope+"."+name]=entry
+		self.scoped_table[scope].append(entry)
 	def add_function(self,name,_type,scope,line,args,**kwargs):
 		var=self.table.get(scope+"."+name,None)
 		if var!=None:
 			return var
-		self.table[scope+"."+name]=FunctionEntry(
+		entry=FunctionEntry(
 			name=name,
 			_type=_type,
 			scope=scope,
@@ -63,11 +66,13 @@ class Symtable:
 			arguments=args,
 			**kwargs
 		)
+		self.table[scope+"."+name]=entry
+		self.scoped_table[scope].append(entry)
 	def add_vector(self,name,_type,scope,line,size,**kwargs):
 		var=self.table.get(scope+"."+name,None)
 		if var!=None:
 			return var
-		self.table[scope+"."+name]=VectorEntry(
+		entry=VectorEntry(
 			name=name,
 			_type=_type,
 			scope=scope,
@@ -75,6 +80,8 @@ class Symtable:
 			size=size,
 			**kwargs
 		)
+		self.table[scope+"."+name]=entry
+		self.scoped_table[scope].append(entry)
 	def __getitem__(self,k):
 		return self.table[k]
 	def get(self,scope,k):
@@ -84,6 +91,10 @@ class Symtable:
 		if local==None:
 			return self.table.get("."+k) #try to return global
 		return local
+	def get_local_vars(self,scope):
+		if isinstance(scope,lark.Tree):
+			scope=Symtable.get_scope(scope)
+		return self.scoped_table.get(scope,[])
 	def get_scope(tree):
 		important=[]
 		
