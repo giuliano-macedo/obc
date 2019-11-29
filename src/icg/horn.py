@@ -17,8 +17,8 @@ class Temporary_Variable(str):
 		obj.i=i
 		obj.is_vec=is_vec
 		return obj
-	def __str__(self):
-		return self
+	# def __str__(self):
+	# 	return self
 @lark.v_args(tree=True)
 class Horn(lark.Transformer):
 	def __init__(self,_list=None,level=0):

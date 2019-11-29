@@ -130,3 +130,7 @@ class Transformer(lark.Transformer):
 		return []
 	def goto(self,tree):
 		return []
+	def backup(self,tree):
+		return []
+	def restore(self,tree):
+		return []

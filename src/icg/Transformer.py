@@ -110,7 +110,21 @@ class Transformer(lark.Transformer):
 					if all((var.is_vector() for var in (var1,var2))):
 						ans.list=[TA("set_vec",arg1,arg2)]
 						ans.level=0
-
+			#----------------------------------------------------------------
+			#backup and resotre on call instructions
+			ta_indexes=[i for i,ta in enumerate(ans.list) if ta.op=="call"]
+			local_args=[var.name for var in self.symtable.get_local_vars(tree) if not var.is_function()]
+			if ta_indexes and local_args:
+				backups=[TA("backup",var) for var in local_args]
+				restores=[TA("restore",var) for var in local_args[::-1]]
+				for i in ta_indexes[::-1]:
+					for x in range(i,-1,-1):
+						if ans.list[x].op not in {"call","arg","get_ret"}:break
+					for y in range(i,len(ans.list)):
+						if ans.list[y].op not in {"call","arg","get_ret"}:break
+					x+=1
+					ans.list[y:y]=restores
+					ans.list[x:x]=backups
 			self.max_level=max(self.max_level,ans.level)
 			return ans.list
 		return tree

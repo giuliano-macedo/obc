@@ -23,7 +23,9 @@ class TA(lark.Tree):
 		"set_at_index":"set_at_index",
 		"ifz_goto":"ifz_goto",
 		"ifnz_goto":"ifnz_goto",
-		"goto":"goto"
+		"goto":"goto",
+		"backup":"backup",
+		"restore":"restore"
 	}
 	def __init__(self,op,arg1=None,arg2=None,arg3=None):
 		self.op=op
