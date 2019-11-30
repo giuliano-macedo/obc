@@ -1,8 +1,30 @@
 import lark
 from .horn import horn,Temporary_Variable
 from .TA import TA,Label
+from collections import deque
 def ignore():
 	raise lark.Discard()
+def find_range(l,f):
+	pairs=deque((i,i+1) for i,e in enumerate(l) if f(e))
+	print(pairs)
+	ans=[]
+	p=[0,0]
+	while(len(pairs)>1):
+		act=pairs.popleft()
+		nex=pairs[0]
+		if p==[0,0]:
+			p=list(act)
+		if act[1]==nex[0]:
+			p[1]=nex[1]
+		else:
+			ans.append(tuple(p))
+			p=[0,0]
+	if(len(pairs)==1):
+		if p==[0,0]:
+			ans.append(pairs.pop())
+		else:
+			ans.append((p[0],pairs.pop()[1]))
+	return ans
 @lark.v_args(tree=True)
 class Transformer(lark.Transformer):
 	def __init__(self,symtable,*args,**kwargs):
@@ -112,19 +134,22 @@ class Transformer(lark.Transformer):
 						ans.level=0
 			#----------------------------------------------------------------
 			#backup and resotre on call instructions
-			ta_indexes=[i for i,ta in enumerate(ans.list) if ta.op=="call"]
+			#hacky, put nop betwen get_ret and arg
+			for i,elem in enumerate(ans.list[:-1]):
+				nex=ans.list[i+1]
+				if (elem.op,nex.op) == ("get_ret","arg"):
+					ans.list.insert(i+1,TA("nop"))
+			ta_ranges=find_range(ans.list,lambda ta:ta.op in {"arg","call","get_ret"})
 			local_args=[var.name for var in self.symtable.get_local_vars(tree) if not var.is_function()]
-			if ta_indexes and local_args:
+			if local_args and ta_ranges:
 				backups=[TA("backup",var) for var in local_args]
 				restores=[TA("restore",var) for var in local_args[::-1]]
-				for i in ta_indexes[::-1]:
-					for x in range(i,-1,-1):
-						if ans.list[x].op not in {"call","arg","get_ret"}:break
-					for y in range(i,len(ans.list)):
-						if ans.list[y].op not in {"call","arg","get_ret"}:break
-					x+=1
-					ans.list[y:y]=restores
-					ans.list[x:x]=backups
+				print(*enumerate(ans.list),sep="\n")
+				print(ta_ranges)
+				for x,y in ta_ranges[::-1]:
+					ans.list[x:y]=[*backups,*ans.list[x:y],*restores]
+				print(*enumerate(ans.list),sep="\n")
+				print("-"*32)
 			self.max_level=max(self.max_level,ans.level)
 			return ans.list
 		return tree
