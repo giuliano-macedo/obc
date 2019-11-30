@@ -21,7 +21,7 @@ void main(void){
 	x=y+z*(a/b);;
 	a=g(x+1,y+1);;
 	y=f(x+1)+z;;
-	x=f(1+1);;
+	x=f(1+1)+g(x,y);;
 	vfA();
 	vfB(x=2);
 }
