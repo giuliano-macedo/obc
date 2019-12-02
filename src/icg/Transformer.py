@@ -1,29 +1,17 @@
 import lark
 from .horn import horn,Temporary_Variable
 from .TA import TA,Label
-from collections import deque
+from itertools import groupby
 def ignore():
 	raise lark.Discard()
+#https://stackoverflow.com/a/59120132/5133524
 def find_range(l,f):
-	pairs=deque((i,i+1) for i,e in enumerate(l) if f(e))
-	print(pairs)
-	ans=[]
-	p=[0,0]
-	while(len(pairs)>1):
-		act=pairs.popleft()
-		nex=pairs[0]
-		if p==[0,0]:
-			p=list(act)
-		if act[1]==nex[0]:
-			p[1]=nex[1]
-		else:
-			ans.append(tuple(p))
-			p=[0,0]
-	if(len(pairs)==1):
-		if p==[0,0]:
-			ans.append(pairs.pop())
-		else:
-			ans.append((p[0],pairs.pop()[1]))
+	indices, ans = range(len(l)), []
+	for k, group in groupby(indices, key=lambda i: l[i]):
+		if f(k):
+			group = list(group)
+			sl = group[0], group[-1] + 1
+			ans.append(sl)
 	return ans
 @lark.v_args(tree=True)
 class Transformer(lark.Transformer):
